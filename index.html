@@ -1,0 +1,1943 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CITIZEN SCAVENGER</title>
+    <style>
+        :root { 
+            --green: #00ff41; 
+            --red: #ff0055; 
+            --orange: #ffaa00; 
+            --bg: #050505; 
+            --blue: #00ffff; 
+            --gold: #ffec3d; 
+            --dim: #003300; 
+        }
+        body { 
+            background-color: var(--bg); 
+            color: var(--green); 
+            font-family: 'Courier New', monospace; 
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            overflow: hidden; 
+            position: relative;
+        }
+        .page { 
+            display: none; 
+            width: 95%; 
+            max-width: 450px; 
+            flex-direction: column; 
+            text-align: center; 
+        }
+        .active { 
+            display: flex; 
+        }
+        #os-interface { 
+            padding: 20px; 
+            border: 2px solid var(--green); 
+            box-shadow: 0 0 15px var(--green); 
+            background: rgba(0, 15, 0, 0.95); 
+            position: relative; 
+            z-index: 10;
+        }
+        .screen-title { 
+            font-size: 2.5em; 
+            margin-bottom: 20px; 
+            text-shadow: 0 0 10px var(--green); 
+            line-height: 1; 
+        }
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 10px; 
+            margin-bottom: 10px; 
+        }
+        .stat-box { 
+            border: 1px solid var(--green); 
+            padding: 8px; 
+            font-size: 11px; 
+            text-align: left; 
+            transition: background 0.3s; 
+        }
+        .flash-heal { 
+            background: rgba(0, 255, 255, 0.4) !important; 
+            box-shadow: 0 0 15px var(--blue); 
+        }
+        .bar-bg { 
+            width: 100%; 
+            height: 8px; 
+            background: #002200; 
+            border: 1px solid var(--green); 
+            margin-top: 4px; 
+            position: relative;
+            overflow: hidden;
+        }
+        .bar-fill { 
+            height: 100%; 
+            transition: width 0.3s linear; 
+        }
+        #reload-bar-fill {
+            background: var(--red);
+            width: 0%;
+        }
+        #display-log { 
+            height: 90px; 
+            border: 1px solid var(--green); 
+            background: #000; 
+            padding: 10px; 
+            overflow-y: auto; 
+            font-size: 11px; 
+            text-align: left; 
+            margin-bottom: 5px; 
+        }
+        .control-panel { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 10px; 
+        }
+        .action-btn { 
+            background: #000; 
+            color: var(--green); 
+            border: 1px solid var(--green); 
+            padding: 10px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 12px; 
+            font-family: inherit; 
+            transition: 0.2s; 
+        }
+        .action-btn:hover:not(:disabled) { 
+            background: rgba(0, 255, 65, 0.2); 
+        }
+        .action-btn:disabled { 
+            color: var(--dim); 
+            border-color: var(--dim); 
+            opacity: 0.5; 
+            cursor: not-allowed; 
+        }
+        .full-width { 
+            grid-column: span 2; 
+        }
+        .inventory-list { 
+            width: 100%; 
+            max-height: 250px; 
+            overflow-y: auto; 
+            border: 1px solid var(--green); 
+            margin-bottom: 15px; 
+            background: #000; 
+        }
+        .item-row { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 12px 10px; 
+            border-bottom: 1px solid #003300; 
+            align-items: center; 
+            text-align: left; 
+            font-size: 12px; 
+        }
+        .btn-group { 
+            display: flex; 
+            gap: 8px; 
+        }
+        .item-btn { 
+            min-width: 50px; 
+            padding: 6px 10px; 
+            border: 1px solid var(--green); 
+            background: transparent; 
+            color: var(--green); 
+            cursor: pointer; 
+            font-size: 10px; 
+            font-family: inherit; 
+        }
+        .btn-use { 
+            border-color: var(--blue); 
+            color: var(--blue); 
+        }
+        .btn-sell { 
+            border-color: var(--red); 
+            color: var(--red); 
+        }
+        #street-feed { 
+            margin-top: 10px; 
+            padding: 10px; 
+            border-top: 1px dashed var(--green); 
+            font-size: 11px; 
+            color: var(--blue); 
+            min-height: 30px; 
+            font-style: italic; 
+        }
+        #encounter-area { 
+            min-height: 50px; 
+            margin-top: 5px; 
+        }
+        .shop-item { 
+            border: 1px solid var(--blue); 
+            margin-bottom: 5px; 
+            padding: 8px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            text-align: left; 
+            font-size: 12px; 
+        }
+        .no-money {
+            border-color: #ff4d4d !important;
+            color: #ff4d4d !important;
+            text-shadow: 0 0 5px #ff0000;
+            cursor: not-allowed;
+        }
+        
+.start-poem {
+    font-size: 12px;
+    line-height: 2; /* 行間を広げて「読み」の余白を作る */
+    color: rgba(0, 255, 65, 0.6); /* システムカラーの緑を少し透けさせる */
+    margin: 0 auto 30px;
+    text-align: center;
+    letter-spacing: 0.15em; /* 文字の間隔を広げて情緒を出す */
+    font-style: italic;
+    max-width: 80%;
+}
+
+ .background-grid {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    perspective: 500px;
+    z-index: -2; /* 一番奥に配置 */
+    background: var(--bg);
+    overflow: hidden;
+}
+
+/* カードバトル専用のレイアウト設定 */
+.kadoba-upper-layout {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.kadoba-player-side, .kadoba-enemy-side {
+    width: 45%;
+}
+
+.kadoba-vs-divider {
+    align-self: center;
+    font-weight: bold;
+    color: var(--red);
+    font-size: 14px;
+}
+
+.kadoba-slot-grid {
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 2px;
+    margin-bottom: 5px;
+}
+
+.slot-item {
+    font-size: 9px; 
+    height: 18px; 
+    padding: 2px; 
+    text-align: center;
+    line-height: 14px;
+    overflow: hidden;
+}
+
+/* 中央エリアの調整 */
+.kadoba-center-layout {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#kadoba-log {
+    height: 120px; /* ログエリアを拡大 */
+    border: 1px solid var(--green); 
+    background: #000; 
+    font-size: 11px; 
+    padding: 10px; 
+    overflow-y: auto; 
+    text-align: left;
+    color: var(--green);
+}
+
+.background-grid::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -25%;
+    width: 150%;
+    height: 150%;
+    background-image: 
+        linear-gradient(rgba(0, 255, 65, 0.2) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 65, 0.2) 1px, transparent 1px);
+    background-size: 50px 50px;
+    transform: rotateX(60deg);
+    animation: grid-moving 3s linear infinite;
+}
+
+@keyframes grid-moving {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 50px; }
+}     
+
+
+/* 画面全体のノイズ感（走査線）は別で重ねる */
+body::after {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    /* 走査線の密度を少し上げ、色を調整 */
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.1),
+        rgba(0, 0, 0, 0.1) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    pointer-events: none;
+    z-index: 999; /* 数値を大きくして一番手前に */
+}
+
+/* 起動ログ用の特別設定（HTMLの構造に合わせて調整） */
+#boot-log-container {
+    text-align: left;
+    font-size: 0.8em;
+    margin-top: 20px;
+    border-top: 1px double var(--green);
+    padding-top: 10px;
+}
+
+/* 起動・クリア用の特殊演出 */
+.glitch {
+    animation: glitch-anim 0.2s infinite;
+    text-shadow: 2px 0 var(--red), -2px 0 var(--blue);
+}
+
+@keyframes glitch-anim {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+}
+
+
+/* クリア画面用の派手な装飾 */
+#page-clear {
+    position: fixed;
+max-width: none !important;
+    top: 0; left: 0;
+    width: 100vw!important; height: 100vh!important;
+    background: radial-gradient(circle at 50% 50%, #000d1a 0%, #000 100%) !important;
+    border: none !important;
+    z-index: 1;
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+}
+   .night-sky {
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #000d1a 0%, #000 100%);
+           
+ position: absolute;
+
+        }
+
+        /* --- 星の層（5倍に増量 & 発光バラバラ） --- */
+        .star-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+
+.success-banner {
+position: relative;
+
+    color: #ffffff;            /* 純白にして夜空に映えるように */
+    font-size: 5rem;           /* 大きめに表示 */
+    font-weight: 100;          /* 極細にして上品・繊細な印象に */
+    letter-spacing: 25px;      /* 文字の間隔を大きく広げて「解放感」を演出 */
+    text-indent: 25px;         /* 右に寄らないよう間隔分を調整 */
+    text-shadow: 
+        0 0 10px rgba(255, 255, 255, 0.5), 
+        0 0 30px rgba(255, 255, 255, 0.2); /* ぼんやりと光らせる */
+    z-index: 2;
+    margin: 0;
+    font-family: 'Courier New', monospace; /* ゲームのフォントに合わせる */
+}
+
+
+        /* 超微細な遠くの星々 */
+        .s-dust {
+            background-image: 
+                radial-gradient(1px 1px at 5% 5%, rgba(100, 150, 255, 0.3), transparent),
+                radial-gradient(1px 1px at 20% 35%, rgba(150, 200, 255, 0.2), transparent),
+                radial-gradient(1px 1px at 45% 15%, rgba(100, 150, 255, 0.3), transparent),
+                radial-gradient(1px 1px at 75% 65%, rgba(150, 200, 255, 0.2), transparent),
+                radial-gradient(1px 1px at 95% 85%, rgba(100, 150, 255, 0.3), transparent);
+            background-size: 100px 100px; /* 小さくして密度5倍 */
+            animation: twinkle-1 5s infinite alternate ease-in-out -1.2s;
+        }
+
+        /* 青白い温度感のある星々 */
+        .s-blue {
+            background-image: 
+                radial-gradient(1.5px 1.5px at 15% 25%, rgba(100, 150, 255, 0.7), transparent),
+                radial-gradient(1.2px 1.2px at 60% 70%, rgba(150, 200, 255, 0.6), transparent),
+                radial-gradient(1.5px 1.5px at 80% 10%, rgba(100, 150, 255, 0.7), transparent);
+            background-size: 200px 200px;
+            animation: twinkle-2 7s infinite alternate ease-in-out -3.5s;
+        }
+
+        /* 明るい白星 */
+        .s-white {
+            background-image: 
+                radial-gradient(2px 2px at 30% 50%, #fff 100%, transparent),
+                radial-gradient(1.8px 1.8px at 70% 20%, #fff 100%, transparent);
+            background-size: 250px 250px;
+            filter: drop-shadow(0 0 3px #fff);
+            animation: twinkle-3 4s infinite alternate ease-in-out -0.8s;
+        }
+
+        /* 強く輝く星（グロウ） */
+        .s-glow {
+            background-image: 
+                radial-gradient(2.5px 2.5px at 50% 80%, rgba(180, 210, 255, 1) 100%, transparent),
+                radial-gradient(2px 2px at 10% 90%, #fff 100%, transparent);
+            background-size: 400px 400px;
+            filter: drop-shadow(0 0 8px rgba(100, 150, 255, 1));
+            animation: twinkle-4 6s infinite alternate ease-in-out -2.1s;
+        }
+
+        @keyframes twinkle-1 { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.6; } }
+        @keyframes twinkle-2 { 0%, 100% { opacity: 0.7; } 50% { opacity: 0.3; } }
+        @keyframes twinkle-3 { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.9; } }
+        @keyframes twinkle-4 { 0%, 100% { opacity: 0.8; } 50% { opacity: 0.2; } }
+
+        /* --- 流れ星（16本に倍増） --- */
+        .shooting-star {
+            position: absolute;
+            width: 200px;
+            height: 1px;
+            background: linear-gradient(to right, rgba(255,255,255,1), transparent);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @keyframes shoot {
+            0% { transform: translateX(0) translateY(0) rotate(-35deg) scaleX(0); opacity: 0; }
+            5% { opacity: 1; scaleX(1); }
+            15% { transform: translateX(-900px) translateY(630px) rotate(-35deg) scaleX(1); opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        /* 流れ星：16本それぞれのランダム設定 */
+        .s1  { top: 5%;  left: 90%; animation: shoot 7s  infinite 0.5s; }
+        .s2  { top: 15%; left: 80%; animation: shoot 11s infinite 4.2s; }
+        .s3  { top: -5%; left: 60%; animation: shoot 9s  infinite 2.1s; }
+        .s4  { top: 35%; left: 100%; animation: shoot 13s infinite 6.8s; }
+        .s5  { top: 10%; left: 40%; animation: shoot 10s infinite 5.3s; }
+        .s6  { top: 55%; left: 110%; animation: shoot 15s infinite 1.2s; }
+        .s7  { top: -10%; left: 90%; animation: shoot 12s infinite 8.5s; }
+        .s8  { top: 25%; left: 70%; animation: shoot 14s infinite 3.7s; }
+        .s9  { top: 45%; left: 85%; animation: shoot 8s  infinite 1.5s; }
+        .s10 { top: 65%; left: 95%; animation: shoot 16s infinite 5s; }
+        .s11 { top: 5%;  left: 20%; animation: shoot 10s infinite 9s; }
+        .s12 { top: 80%; left: 100%; animation: shoot 12s infinite 2.5s; }
+        .s13 { top: -20%; left: 40%; animation: shoot 9s  infinite 4s; }
+        .s14 { top: 20%; left: 50%; animation: shoot 14s infinite 7.2s; }
+        .s15 { top: 40%; left: 30%; animation: shoot 11s infinite 1.8s; }
+        .s16 { top: 0%;  left: 100%; animation: shoot 13s infinite 10s; }
+
+  
+    </style>
+</head>
+<body>
+<div class="background-grid"></div>
+<div id="page-title" class="page active">
+    <div id="os-interface">
+        <h1 class="screen-title">CITIZEN<br>SCAVENGER</h1>
+        <p style="margin-bottom:30px; font-size:0.9em;">SYSTEM v3.0 ONLINE</p>
+        <button id="start-btn" class="action-btn full-width" onclick="startGame()">システム起動 [START]</button>
+ <div id="boot-log-container"></div>
+<div class="start-poem">
+    見上げる空は 濁った膜に 瞬きひとつ 届かぬ廃星<br>
+    毒に沈んだ この地の先に<br>
+    澄んだ銀河は 戻るのだろうか
+</div>
+
+        <div id="boot-log-container"></div>
+
+    </div>
+</div>
+
+<div id="page-main" class="page">
+    <div id="os-interface">
+        <div style="font-size: 10px; border-bottom: 1px solid var(--green); margin-bottom: 10px; display: flex; justify-content: space-between;">
+            <span>OS v3.0</span>
+<div id="hazard-display" style="font-size: 14px; font-weight: bold; color: var(--green); margin: 5px 0;">
+    HAZARD[1]:[ NORMAL ]
+</div>
+            <span id="target-msg" style="color:var(--blue)">DAY: <span id="day-val">1</span></span>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-box" id="hp-box">
+                HP: <span id="hp-val">100</span> / <span id="hp-max">100</span>
+                <div class="bar-bg"><div id="hp-fill" class="bar-fill" style="width: 100%; background: var(--green);"></div></div>
+            </div>
+            <div class="stat-box" id="hg-box">
+                HG: <span id="hg-val">100</span> / <span id="hg-max">100</span>
+                <div class="bar-bg"><div id="hg-fill" class="bar-fill" style="width: 100%; background: var(--orange);"></div></div>
+            </div>
+        </div>
+        <div class="stat-box" style="margin-bottom: 5px; text-align: center; font-size: 1.4em; color: var(--gold);">
+            MONEY: <span id="money-val">0</span> ₿
+        </div>
+        <div id="display-log"></div>
+        
+        <div id="cooldown-area" style="height:25px; margin-bottom:5px;">
+            <div id="cooldown-txt" style="color:var(--red); font-size:10px; height:12px; font-weight:bold; text-align:left;"></div>
+            <div class="bar-bg" id="reload-bar-bg" style="display:none; height:4px; border:none; background:#111;">
+                <div id="reload-bar-fill" class="bar-fill"></div>
+            </div>
+        </div>
+
+        <div class="control-panel">
+<div style="display: flex; gap: 5px;" class="full-width">
+    <button class="action-btn" id="btn-scavenge" style="flex: 3;" onclick="scavenge()">探索 [SCAVENGE]</button>
+    <button class="action-btn" id="btn-rest" style="flex: 1; border-color: var(--blue); color: var(--blue);" onclick="rest()">休憩</button>
+</div>
+            <button class="action-btn"id="btn-inv" onclick="switchPage('page-inv')">所持品 [INV]</button>
+<button class="action-btn" id="btn-card" style="border-color:var(--purple); color:var(--purple);" onclick="switchPage('page-card')">カード [BOX]</button>
+        </div>
+        <div id="street-feed">>> 信号待機中...</div>
+        <div id="encounter-area"></div>
+    </div>
+</div>
+
+<div id="page-inv" class="page">
+    <div id="os-interface">
+        <h3 style="margin:0; border-bottom: 1px solid var(--green);">ITEM BOX</h3>
+        <div id="inv-msg" style="font-size:11px; color:var(--blue); height:20px; margin:5px 0;"></div>
+        <div class="inventory-list" id="inv-list"></div>
+        <button class="action-btn full-width" onclick="switchPage('page-main')">戻る [BACK]</button>
+    </div>
+</div>
+
+<div id="page-card" class="page">
+    <div id="os-interface" style="border-color: var(--purple);">
+        <h3 style="margin:0; color:var(--purple); border-bottom: 1px solid var(--purple);">CARD STORAGE</h3>
+        <div id="card-msg" style="font-size:11px; color:var(--purple); height:20px; margin:5px 0;">収集したデータカード</div>
+        <div class="inventory-list" id="card-list" style="border-color: var(--purple);"></div>
+        <button class="action-btn full-width" onclick="switchPage('page-main')">戻る [BACK]</button>
+    </div>
+</div>
+
+<div id="page-shop" class="page">
+    <div id="os-interface" style="border-color: var(--blue);">
+        <h3 style="margin:0; color:var(--blue); border-bottom: 1px solid var(--blue);">TECH-SHOP</h3>
+        <div class="inventory-list" id="shop-list"></div>
+        <button class="action-btn full-width" onclick="switchPage('page-main')">店を出る [LEAVE]</button>
+    </div>
+</div>
+
+<div id="page-battle" class="page">
+    <div id="os-interface" style="border-color: var(--red); box-shadow: 0 0 20px var(--red);">
+        <h3 id="battle-title" style="margin:0; color:var(--red); border-bottom: 1px solid var(--red);">DEFENSE SYSTEM</h3>
+        <p style="font-size: 10px; margin: 10px 0;">スロットを止めて迎撃せよ</p>
+        
+        <div id="battle-slots" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 15px;">
+            <div id="bs-0" class="stat-box" style="text-align:center;">COUNTER (反撃)</div>
+            <div id="bs-1" class="stat-box" style="text-align:center;">BLOCK (防御)</div>
+            <div id="bs-2" class="stat-box" style="text-align:center;">CRITICAL (強奪)</div>
+            <div id="bs-3" class="stat-box" style="text-align:center;">BLOCK (防御)</div>
+            <div id="bs-4" class="stat-box" style="text-align:center;">FAILED (失敗)</div>
+            <div id="bs-5" class="stat-box" style="text-align:center;">COUNTER (反撃)</div>
+        </div>
+
+        <button class="action-btn full-width" id="btn-spin" onclick="handleBattleSpin()">EXECUTE [STOP]</button>
+        <div id="battle-log" style="font-size:12px; color:var(--red); margin-top:10px; height:20px; font-weight:bold;"></div>
+    </div>
+</div>
+
+
+<div id="page-kadoba" class="page">
+    <div id="os-interface" style="border-color: var(--blue);">
+        <div id="kadoba-header" style="font-size: 14px; margin-bottom: 10px; color: var(--red); border-bottom: 2px solid var(--red); padding-bottom: 5px; font-weight: bold; letter-spacing: 1px;">
+    ◤◢◤◢◤◢  CRITICAL_EXECUTION  ◢◤◢◤◢◤<br>
+    <span style="font-size: 10px; color: var(--gold);">▷ SYNC_RATE: 120% // [KADO-BA] PROTOC0L</span>
+</div>
+        
+        <div class="kadoba-upper-layout">
+            <div class="kadoba-player-side">
+                <div id="p-slot-area" class="kadoba-slot-grid">
+                    <div id="ps-0" class="stat-box slot-item">-</div>
+                    <div id="ps-1" class="stat-box slot-item">-</div>
+                    <div id="ps-2" class="stat-box slot-item">-</div>
+                    <div id="ps-3" class="stat-box slot-item">-</div>
+                    <div id="ps-4" class="stat-box slot-item">-</div>
+                    <div id="ps-5" class="stat-box slot-item">-</div>
+                </div>
+                <div class="bar-bg"><div id="p-kadoba-fill" class="bar-fill" style="background: var(--green);"></div></div>
+                <div style="display:flex; justify-content: space-between; font-size: 10px; margin-top:2px;">
+                    <span>SCAVENGER</span>
+                    <span id="p-kadoba-hp-txt">100/100</span>
+                </div>
+            </div>
+
+            <div class="kadoba-vs-divider">VS</div>
+
+            <div class="kadoba-enemy-side">
+                <div id="e-slot-area" class="kadoba-slot-grid">
+                    <div id="es-0" class="stat-box slot-item">-</div>
+                    <div id="es-1" class="stat-box slot-item">-</div>
+                    <div id="es-2" class="stat-box slot-item">-</div>
+                    <div id="es-3" class="stat-box slot-item">-</div>
+                    <div id="es-4" class="stat-box slot-item">-</div>
+                    <div id="es-5" class="stat-box slot-item">-</div>
+                </div>
+                <div class="bar-bg"><div id="e-kadoba-fill" class="bar-fill" style="background: var(--red);"></div></div>
+                <div style="display:flex; justify-content: space-between; font-size: 10px; margin-top:2px;">
+                    <span id="e-kadoba-name">ENEMY</span>
+                    <span id="e-kadoba-hp-txt">100/100</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="kadoba-center-layout">
+            <div id="kadoba-log"></div>
+            <button id="btn-kadoba-stop" class="action-btn full-width" onclick="stopKadobaSlot()">STOP [EXECUTE]</button>
+        </div>
+    </div>
+</div>
+
+
+<div id="page-dead" class="page">
+    <div id="os-interface" style="border-color: var(--red); box-shadow: 0 0 20px var(--red); background: rgba(20, 0, 0, 0.95);">
+        <h1 class="glitch" style="color:var(--red); font-size:2.5em; margin-bottom:10px;">FATAL ERROR</h1>
+        
+        <p id="dead-reason" style="color:var(--red); font-weight:bold; letter-spacing: 2px;">VITAL SIGN LOST</p>
+        
+        <div style="text-align:left; font-size:11px; border:1px solid var(--red); padding:15px; margin:20px 0; color:var(--red); background:rgba(255,0,0,0.1); line-height:1.5;">
+            > 意識の同期：オフライン...<br>
+            > 生体維持装置：停止...<br>
+            > 資産アクセス権：凍結されました...<br><br>
+            <span style="font-weight:bold;">[警告] あなたの全データは消去されます。</span>
+        </div>
+
+        <button class="action-btn full-width" 
+                style="border-color:var(--red); color:var(--red); font-size:1.2em;" 
+                onclick="location.reload()">
+            システム再起動 [REBOOT]
+        </button>
+    </div>
+</div>
+
+
+<div id="page-clear" class="page">
+ <div class="night-sky">
+        <div class="star-layer s-dust"></div>
+        <div class="star-layer s-blue"></div>
+        <div class="star-layer s-white"></div>
+        <div class="star-layer s-glow"></div>
+        
+        <div class="shooting-star s1"></div><div class="shooting-star s2"></div>
+        <div class="shooting-star s3"></div><div class="shooting-star s4"></div>
+        <div class="shooting-star s5"></div><div class="shooting-star s6"></div>
+        <div class="shooting-star s7"></div><div class="shooting-star s8"></div>
+        <div class="shooting-star s9"></div><div class="shooting-star s10"></div>
+        <div class="shooting-star s11"></div><div class="shooting-star s12"></div>
+        <div class="shooting-star s13"></div><div class="shooting-star s14"></div>
+        <div class="shooting-star s15"></div><div class="shooting-star s16"></div>
+    </div>
+        <h1 class="success-banner">ESCAPE</h1>
+        </div>
+   
+
+
+</div>
+
+<script>
+    var hp = 100, hpMax = 100, hunger = 100, hgMax = 100, money = 0, isWaiting = false, inventory = [];
+var days = 1;
+var cardBox = [];
+    var isEncountering = false; 
+var currentHazard = 1; // 初期値: NORMAL
+var hazardName = "NORMAL";
+var filterCount = 0; // マスクの効果残り回数
+var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重み
+
+    var containerCommands = ["JACKPOT", "MISS", "SUCCESS", "MISS", "SUCCESS", "CRITICAL"];    var streetMessages = [
+        "ICカードさえ手に入れば、隔離セクターのゲートを上書きできるはずだ。",
+        "検問の奴ら、資産の4割近くを平気で持っていきやがる。",
+        "戦闘で奪われるのはデータの1割程度だが命取りになるぞ。",
+        "どうしても戦いたくないなら、電磁ボムを積み込んでおくんだな。",
+        "腹が減りすぎると生命維持装置に負荷がかかる。何か胃に入れておけ。",
+        "合成酒『シン・ブルー』。今夜の悪夢を、鮮やかな青に塗り替える。",
+        "【通知】第4区画の酸素濃度低下。呼吸器のフィルタ交換を推奨します。",
+        "あいつ、義体のローンが払えなくて昨日回収されたらしいぜ……。",
+        "意識を永遠のクラウドへ。タナトス・テクノロジー社が導きます。",
+        "『肉体は牢獄、電子こそ真理』 誰かが壁にスプレーで書き残している。",
+        "【警告】未登録ドローンは即座に防衛システムの掃討対象となります。",
+        "今日の合成肉、妙に金属の味がする。ロット番号が古いのか？",
+        "最新OS v9.0 予約受付中。脳に直接、最高の快楽をインストール。",
+        "スラム街全域で深刻なシステム・ラグが発生。原因は依然として不明。",
+        "企業への奉仕は、あなた自身の幸福です。 ―― 統合政府広報局",
+        "ハッカー対策に『アイス・ウォール3000』。記憶を暗号化して保護。",
+        "この酸性雨の向こう側に、本当に青い空なんてあるのかよ。",
+        "【予報】腐食性降雨の恐れ。パーツのコーティングを確認してください。",
+        "被検体急募。高額報酬、非人道的実験への同意。生存保証なし。",
+        "軌道エレベーターの光が、厚い雲の向こうで鈍く明滅している。",
+        "その渇き、電解質飲料『ボルト・アップ』で焼き切れ。",
+        "チップの接続部が熱い。また安物の再生コネクタを掴まされたか。",
+        "愛するペットにAIの知能を。合成犬『ネオ・ワン』新登場。",
+        "『CEOの首に賞金10,000,000₿』。ホロ・ポスターが揺れている。",
+        "22時以降のデジタル通行許可証が必要です。",
+        "眠らない街の、眠らないあなたへ。覚醒剤『オーバークロック』。",
+        "あと1000₿。それだけあれば、このゴミ溜めからおさらばできる。",
+        "企業の株価が過去最高値を更新。下層区の配給カットが決定。",
+        "古い義体、高価買い取り。 ―― 2番街の屑鉄屋",
+        "環境悪化が加速している。早く脱出しないとな。",
+        "今日は空気が美味い。このクソな街にも、稀に幸運は降る。",
+        "地獄の暑さだ。オーバーヒート前に、日陰で回路を休めないと。",
+        "衛星の寿命はあと5ヶ月。その先にあるのは、虚無か希望か。",
+        "預言者が叫んでいる。終焉（アポカリプス）は近い、とな。",
+        "動かずに待つのも生存戦略だ。環境が変わるのを待て。",
+        "汚染濃度が危険域だが、外せない用だ。マスクを締めて外へ出る。",
+    　　"休憩は最高だ。毎日休憩すれば簡単じゃないのか？。",
+    　　"休息中に何かを拾い、誰かと出会う。そんな事あるわけ無いだろ。",
+　　　　"毎日寝てばかりで、ただ時間だけが溶けていく。",
+   　　 "環境が最悪な時は治安もゴミだ。危ない奴に出会うかもな。",
+    　　"奴は賞金首か！？クソ、今のデッキでは分が悪すぎる。",
+    　　"賞金首もピンキリだ。ジャンク同然の奴から、本物の怪物までな。",
+   　　 "賞金首は歴戦の猛者だ。ジミー？あんなバカは放っておけ。",
+   　　 "カードの戦闘記録を同期すれば、賞金首にも勝てるはずだ。",
+    　　"脱出するなら企業の防御兵器に怯えろ。見つかれば即、塵だ。",
+    　　"放置コンテナの噂だ。中身は宝か、それとも悪質なトラップか。",
+    　　"電磁ボムは裏切らない。予備のチップを数個買っておけ。",
+   　　 "首を狩るなら、体力だけは限界まで高めておけ。",
+    　　"ICカードは使い所が肝心だ。何事もタイミングが命だぞ。",
+    　　"店で買ったものは売れない。よく考えてから₿を決済しろ。",
+    　　"格納庫がロックされた！配給もねえ、どうやって腹を満たせと？",
+    　　"店は便利だ。毎日通って痛いぜ。",
+        "この街のネオンは、住民の絶望をエネルギーにして光っているんだ",
+        "ハッカーどものせいで、昨日は第8ゲートが一日中開かなかった。",
+        "下層区の配給食、最近はプラスチックみたいな食感になってきたな。",
+        "生身の体なんて、今じゃ博物館か高額な実験施設にしかないだろうぜ。",
+    　　"ジャックスにだけは関わるな。奴の網からは誰も逃げられない。",
+        "雨。雨。雨。この酸は、俺たちの罪を溶かしてはくれない。",
+        "『幸福は義務です』――消えかけた看板が、闇の中で虚しく光る。",
+        "第4区の酸素濃度低下。配給マスクの価格が昨晩の3倍になった。",
+        "路地裏のジャンキーが、存在しない太陽を拝んで笑っている。",
+        "検問の連中、最近は胃袋の中までスキャンしやがる。最悪だ。",
+        "企業のドローンが墜落したらしい。ジャンク漁りの絶好の機会だ。",
+        "『昨日を忘れたい？ 当店なら100ビットで記憶を上書き。』",
+        "自動販売機から出てきたのは、賞味期限が10年前の合成肉だ。",
+        "逃亡中のハッカーが公開処刑された。脳が焼ける臭いがする。",
+        "150日。その先へ行った奴は、一人として戻ってこない。",
+        "電磁ノイズがひどい。視界に映るステータスが細かくブレる。",
+        "「脱出用ICカード」の闇相場が上がった。自由が遠のいていく。",
+        "上層区の連中は、この空が青かった頃の夢を見るらしい。",
+        "排水溝に流れ込むのは、汚水か、それとも誰かの血液か。",
+        "電力制限。今夜もこの区画は、企業の都合で闇に沈む。",
+        "『健康を維持せよ。お前の肉体は企業の所有物である。』",
+        "壊れたアンドロイドが、ゴミ捨て場で古い子守唄を歌っている。",
+        "JAMMINGがひどい。バッグのロックが、どうしても外れない。",
+        "壁に書き殴った文字「出口はこの下にある」そこにはゴミ箱があった",
+        "未認可のサイバーウェアを積んだ男が、角の店で爆発した。",
+        "合成肉の味にも慣れた。もはや本物の「肉」が何かも知らん。",
+        "空に浮かぶ巨大モニターが、株価と一緒に誰かの訃報を流す。",
+        "リペアキットの在庫が切れた。このまま錆びて死ぬのを待つか。",
+        "酸性雨。屋根のない場所で寝る奴は、自殺志願者だ。",
+        "銀行が凍結された。昨日まで持っていたビットがただの数字に。",
+        "「助けて」と書かれたホログラムが、無人の交差点で揺れている。",
+        "新型ナノウイルス。感染者は速やかに指定の焼却炉へ。 ",
+        "空腹で目が回る。リールを回す力さえ、残っているかどうか。",
+        "あのビルを買い占めたのは誰だ？ 答えは墓場まで持ってけ。",
+        "世界が終わる日は、きっと今日みたいな退屈な雨の日だ。",
+        "誰かに追われている気がする。……ノイズか、それとも視線か。"];
+
+           // 探索ドロップアイテム（売却可能）
+    var itemMaster = [
+        {name: "錆びた歯車", price: 20, type: "none"}, {name: "光る配線", price: 35, type: "none"},
+        {name: "汚れた基板", price: 50, type: "none"}, {name: "謎の合金", price: 80, type: "none"},
+        {name: "空き缶", price: 5, type: "none"}, {name: "断線した義手", price: 120, type: "none"},
+        {name: "古い電池", price: 15, type: "none"}, {name: "AIコア残骸", price: 200, type: "none"},
+        {name: "サプリ", price: 10, type: "hp", val: [10, 20]},
+        {name: "エナドリ", price: 25, type: "hg", val: [20, 30]},
+        {name: "点滴薬", price: 40, type: "hp", val: [20, 35]},
+        {name: "乾燥肉", price: 15, type: "hg", val: [10, 20]},
+        // --- 新規追加アイテム ---
+        {name: "鉄の塊", price: 30, type: "none"},
+        {name: "新品の歯車", price: 40, type: "none"},
+        {name: "シャキザク", price: 30, type: "hg", val: [30, 50]},
+        {name: "新品の電池", price: 100, type: "none"},
+        {name: "リペアキット", price: 50, type: "hp", val: [40, 50]}
+
+    ];
+
+    // ショップアイテム（売却不可フラグを追加）
+    var shopMaster = [
+        {id: 0, name: "安物リペア液", price: 30, type: "hp", val: [10, 30], stock: 1, noSell: true},
+        {id: 1, name: "合成ゼリー", price: 30, type: "hg", val: [10, 30], stock: 1, noSell: true},
+        {id: 2, name: "電磁ボム", price: 40, type: "bomb", stock: 1, noSell: true},
+{id: 3, name: "高性能マスク", price: 100, type: "mask", stock: 1, noSell: true},
+{id: 4, name: "カードパック", price: 150, type: "card_pack", stock: 1, noSell: true},
+{id: 5, name: "HP補強材", price: 200, type: "maxhp_item", val: 50, stock: 1, noSell: true},
+        {id: 6, name: "脱出用ICカード", price: 1000, type: "clear", stock: 1, noSell: true}
+    ];
+
+// 全11種類のカードマスター
+const cardMaster = [
+{ id: 0, name: "アサルト", desc: "中ダメージを与える", type: "攻撃" },
+{ id: 1, name: "クリティカル", desc: "大ダメージを与える", type: "攻撃" },
+{ id: 2, name: "オーバーキル", desc: "特大ダメージを与える", type: "攻撃" },
+{ id: 3, name: "デーモン契約", desc: "HPを消費し、超ダメージを与える", type: "攻撃" },
+{ id: 4, name: "グリッチ", desc: "ミス数に応じたダメージを与える", type: "攻撃" },
+{ id: 5, name: "シーケンスブロー", desc: "中ダメージを1～3回与える", type: "攻撃" },
+{ id: 6, name: "回路ショート", desc: "自身のHPが高いほど大ダメージ", type: "攻撃" },
+{ id: 7, name: "ナノリペア", desc: "HPを中回復する", type: "バフ" },
+{ id: 8, name: "オーバードライブ", desc: "自身のHPを消費して攻撃力大アップ", type: "バフ" },
+{ id: 9, name: "エラー", desc: "何も起きない", type: "バフ" },
+{ id: 10, name: "チャージ", desc: "攻撃力小アップ", type: "バフ" }
+];
+
+// --- 追加する変数 ---
+let kadobaActive = false;
+let kadobaTurn = "player"; // "player" or "enemy"
+let pKadobaHp = 0, pKadobaAtk = 30;
+let eKadobaHp = 0, eKadobaAtk = 0;
+let currentEnemy = null;
+let pKadobaSlots = []; // 選出された6枚
+let eKadobaSlots = []; // 敵の6枚
+
+// --- 賞金首マスターデータ ---
+const bountyMaster = [
+    { name: "CRAZY_JIMMY", atk: 30, hp: 100, slots: [9, 4, 4, 10, 10, 1], prize: 100 },
+    { name: "NEON_REAPER", atk: 30, hp: 100, slots: [9, 9, 0, 0, 7, 2], prize: 150 },
+    { name: "SHADOW_GLITCH", atk: 30, hp: 120, slots: [9, 9, 9, 9, 9, 4], prize: 250 },
+    { name: "CHROME_VIPER", atk: 30, hp: 150, slots: [0, 0, 1, 6, 6, 10], prize: 350 },
+    { name: "GHOSTWIRE_JAX", atk: 45, hp: 300, slots: [5, 8, 5, 8, 5, 8], prize: 666 },
+    { name: "CORPO_GUARDIAN", atk: 40, hp: 250, slots: [9, 0, 1, 1, 2, 3], prize: 0 }
+];
+
+// update関数のクリア条件を削除（アイテム購入時に判定させるため）
+
+ async function startGame() {
+const poem = document.querySelector('.start-poem');
+    if (poem) poem.style.display = 'none';
+    // ボタンと、新しく作ったログ表示エリアを取得
+    const btn = document.getElementById('start-btn');
+    const bootContainer = document.getElementById('boot-log-container');
+    
+    // ボタンを消す
+    btn.style.display = 'none';
+cardBox = []; 
+       cardBox.push(Object.assign({}, cardMaster[9]));
+    cardBox.push(Object.assign({}, cardMaster[9]));
+    cardBox.push(Object.assign({}, cardMaster[0]));
+    cardBox.push(Object.assign({}, cardMaster[0]));
+    cardBox.push(Object.assign({}, cardMaster[0]));
+    cardBox.push(Object.assign({}, cardMaster[1]));
+    
+    const bootLogs = [
+        "SYSTEM v3.0 BOOTING...",
+        "AUTHENTICATING USER...",
+        "LOADING NEURAL NET...",
+        "LOCALIZING ASSETS...",
+        "ACCESS GRANTED."
+    ];
+
+    // 1行ずつ順番に「boot-log-container」の中に表示する
+    for (let msg of bootLogs) {
+        const line = document.createElement('div');
+        line.style.color = "var(--blue)"; // 起動ログは青色に
+        line.style.marginBottom = "5px";
+        line.innerText = "> " + msg;
+        bootContainer.appendChild(line);
+        
+        // 0.4秒待機
+        await new Promise(resolve => setTimeout(resolve, 400));
+    }
+
+    // すべてのログが出終わったら、少し待ってメイン画面へ
+    setTimeout(() => {
+        switchPage('page-main');
+        log("ようこそ、スカベンジャー。");
+ log("【記録】ここは光なき巨大人工衛星の下層。再び夜空を見る時は来るのだろうか", "#ffffff");
+    }, 600);
+}
+
+    function switchPage(pageId) {
+        if (isEncountering && (pageId === 'page-inv' || pageId === 'page-card')) {
+        log("警告：戦闘中はアクセス不能！", "#ff0055");
+        return;
+        }
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        if(pageId === 'page-inv') renderInventory();
+        if(pageId === 'page-shop') renderShop();
+if(pageId === 'page-card') renderCardBox();
+    }
+
+    function log(msg, color = "#00ff41") {
+        var logEl = document.getElementById('display-log');
+        logEl.innerHTML = '<div style="color:' + color + '">> ' + msg + '</div>' + logEl.innerHTML;
+    }
+
+    function update() {
+        document.getElementById('hp-val').innerText = hp; 
+        document.getElementById('hp-max').innerText = hpMax;
+        document.getElementById('hg-val').innerText = hunger; 
+        document.getElementById('hg-max').innerText = hgMax;
+        document.getElementById('money-val').innerText = money;
+        document.getElementById('day-val').innerText = days;
+        document.getElementById('hp-fill').style.width = (hp/hpMax*100) + "%";
+        document.getElementById('hg-fill').style.width = (hunger/hgMax*100) + "%";
+        if (hp <= 0) {
+    log("致命的エラー：活動限界によりシステム維持不能", "#ff0055");
+setTimeout(() => {
+        // 切り替える直前に理由をセットするのが一番確実
+        document.getElementById('dead-reason').innerText = "VITAL SIGN LOST";
+        switchPage('page-dead');
+    }, 1500);
+}
+}
+
+function updateHazard() {
+    // 150日以上のAPOCALYPSE判定
+    if (days >= 150) {
+        if (currentHazard !== 6) {
+            currentHazard = 6;
+            hazardName = "APOCALYPSE";
+            log("最終警告：終末が訪れた。もはや逃げ場はない。", "#ff0000");
+        }
+    } 
+    // FILTER（マスク）効果中でない場合のみ10%の確率で変化
+    else if (currentHazard !== -1 && Math.random() < Math.min(0.20, 0.10 + (days * 0.001))) {
+        const nextHazard = calculateNextHazard();
+        if (nextHazard !== currentHazard) {
+            currentHazard = nextHazard;
+            const names = {0:"CLEAR", 1:"NORMAL", 2:"OVERHEAT", 3:"ACIDRAIN", 4:"JAMMING", 5:"PANDEMIC"};
+const descriptions = {
+                0: "大気が浄化された。ナノマシンが機体を修復する。",
+                1: "特筆すべき異常なし。標準的な汚染環境だ。",
+                2: "高熱源反応。排熱が追いつかずエネルギーを浪費する。",
+                3: "腐食性降雨を確認。装甲が悲鳴を上げている。",
+                4: "強力なジャミング。外部ストレージへの接続が遮断された。",
+                5: "未知の汚染物質が爆発的に増殖。全装甲が侵食されている。"
+            };
+
+            hazardName = names[currentHazard];
+            
+            // ログの出力：環境名と説明を表示
+            log("環境変化：HAZARD[" + currentHazard + "]: " + hazardName, "#ffaa00");
+            log(">> " + descriptions[currentHazard], "#ffaa00"); // 説明文を追加
+        }
+    }
+            
+    // 表示の更新
+    const hDisplay = document.getElementById('hazard-display');
+    hDisplay.innerText = `HAZARD[${currentHazard}]:[ ${hazardName} ]`;
+    
+    // JAMMINGの効果適用
+    document.getElementById('btn-inv').disabled = (currentHazard === 4);
+    
+    // カラー設定
+    const colors = { "-1":"#00ffff", 0:"#00ffff", 1:"#00ff41", 2:"#ffaa00", 3:"#ff0055", 4:"#ff0055", 5:"#ff0055", 6:"#ff0000" };
+    hDisplay.style.color = colors[currentHazard];
+}
+
+function calculateNextHazard() {
+    // 100日目までの確率変動計算
+    let d = Math.min(days, 100);
+    let normalRate = 100 - (d * 0.75); // 100% -> 25%
+    let othersRate = (100 - normalRate) / 5; // 残りを5等分（各0% -> 15%）
+
+    let r = Math.random() * 100;
+    if (r < normalRate) return 1;
+    if (r < normalRate + othersRate) return 2;
+    if (r < normalRate + othersRate * 2) return 3;
+    if (r < normalRate + othersRate * 3) return 4;
+    if (r < normalRate + othersRate * 4) return 5;
+    return 0; // CLEAR
+}
+function scavenge() {
+        if (isEncountering) {
+            log("警告：戦闘を優先せよ！", "#ff0055");
+            return;
+        }
+        if (isWaiting || hp <= 0) return; 
+        days++;
+
+if (days === 50) {
+        log("【記録】50日生存。ここで学んだことは、この世界は悪夢だということだ。", "#00ffff");
+    } else if (days === 100) {
+        log("【記録】100日生存。悪夢のような世界だとしても、あなたはまだ生きている。", "#ffec3d");
+    } else if (days === 149) {
+        log("【記録】149日生存。どうやらここが悪夢の終点のようだ。この先には何があるのか、それとも何もないのか。", "#ff0055");
+    }else if (days === 200) {
+        log("【記録】200日生存。終末に晒されたこの星にも、ようやく終りが近づいてきたようだ。すべてが崩壊し降り注ぐ瓦礫の雨の隙間から、最後にほんの少しだけ夜空が見えた気がした。", "#ffffff");
+const allButtons = document.querySelectorAll('button');
+    allButtons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.display = "none"; // いっそ消してしまう
+    });
+setTimeout(() => {
+    switchPage('page-clear'); 
+}, 8000);
+return;
+}
+
+
+// scavenge関数内の既存の遭遇判定の前に挿入
+if (hp >= 25 && [2,3,4,5].includes(currentHazard) && Math.random() < 0.07) {
+    log("不明：歴戦の賞金首と遭遇しました！！", "#e066ff");    
+        // 遭遇演出のために少し待ってからバトル画面へ（ここ重要）
+        setTimeout(() => {
+            startKadobaSequence(Math.floor(Math.random() * 5));
+        }, 1500);
+}
+// --- 環境効果の適用 ---
+if (currentHazard === -1) {
+    filterCount--;
+    if (filterCount <= 0) {
+        currentHazard = 1;
+        hazardName = "NORMAL";
+        log("マスクのフィルタが切れた。", "#777");
+    }
+} else if (currentHazard === 2) { // OVERHEAT
+    hunger -= (Math.floor(Math.random() * 3) + 1);
+} else if (currentHazard === 3) { // ACIDRAIN
+    hp -= (Math.floor(Math.random() * 5) + 1);
+} else if (currentHazard === 5) { // PANDEMIC
+    hp -= (Math.floor(Math.random() * 5) + 1);
+    hunger -= (Math.floor(Math.random() * 3) + 1);
+} else if (currentHazard === 0) { // CLEAR
+    hp = Math.min(hpMax, hp + (Math.floor(Math.random() * 5) + 1));
+} else if (currentHazard === 6) { // APOCALYPSE
+    if (Math.random() < 0.30) {
+        hp -= 100;
+        log("終末の光に焼かれた。 [-100HP]", "#ff0000");
+    }
+}
+
+updateHazard(); // 環境の再計算と表示更新
+        document.getElementById('day-val').innerText = days;
+        document.getElementById('encounter-area').innerHTML = "";
+let hLoss = Math.floor(Math.random() * (9 - 5 + 1)) + 5; 
+hunger = Math.max(0, hunger - hLoss);
+        if (hunger <= 0) { hp -= 15; log("警告：エネルギー枯渇！", "#ff0055"); }
+
+        // --- ストリートフィードの更新 ---
+        let feedEl = document.getElementById('street-feed');
+        let sRoll = Math.random(); // ここで宣言した sRoll を下でも使います
+
+        if (sRoll < 0.20) {
+            feedEl.innerText = ">> 警告：近接エリアに敵性反応を確認。";
+        }  else {
+            let randomMsg = streetMessages[Math.floor(Math.random() * streetMessages.length)];
+            feedEl.innerText = ">> " + randomMsg;
+        }
+
+   
+        // --- レアイベント (修正版) ---
+        if (Math.random() < 0.02) {
+            if (Math.random() > 0.5) {
+                // 罰金計算：所持金の40% + 0～300
+                var randomExtra = Math.floor(Math.random() * 301); // 0から300の乱数
+                var loss = Math.floor(money * 0.4) + randomExtra;
+                money -= loss;
+                log("検問：罰金没収。 -" + loss + "₿", "#ff0055");
+                
+                // 強制徴収で0以下になった場合のみゲームオーバー
+if (money <= 0) {
+    money = 0; 
+    update();
+    log("致命的エラー：資産全喪失によりシステム維持不能", "#ff0055");
+    // 1秒待ってから死亡画面へ遷移（プレイヤーが死因を理解する時間を作る）
+    setTimeout(() => {
+        document.getElementById('dead-reason').innerText = "BANKRUPTCY (強制徴収により破綻)";
+        switchPage('page-dead');
+    }, 2000);
+    return;
+}
+}
+}
+        // 特殊遭遇 (維持)
+       if (sRoll < 0.20) { 
+            var enemy = (sRoll < 0.10) ? "STREET THUG" : "SECURITY DRONE";
+            log("警告：" + enemy + "が出現！", "#ff0055");
+            isEncountering = true;
+            document.getElementById('btn-inv').disabled = true;
+document.getElementById('btn-rest').disabled = true;
+            document.getElementById('btn-scavenge').disabled = true;
+            document.getElementById('encounter-area').innerHTML = `
+                <div style="display:flex; gap:5px;">
+                    <button class="action-btn" style="flex:2;" onclick="startBattle('${enemy}')">迎撃態勢 [BATTLE]</button>
+                    <button class="action-btn" style="flex:1; border-color:var(--blue); color:var(--blue);" onclick="useBomb()">ボム使用</button>
+                </div>`;
+        } else if (sRoll < 0.40) { 
+            log("ミス：何も見つからなかった。", "#777");
+            document.getElementById('encounter-area').innerHTML = ""; // 前のボタンを掃除
+} else if (sRoll < 0.45) { 
+        // 5%：カード入手 (新設)
+        getCard(); 
+        document.getElementById('encounter-area').innerHTML = "";
+        } else { 
+            var item = itemMaster[Math.floor(Math.random()*itemMaster.length)];
+            inventory.push(Object.assign({}, item));
+            log("発見：[" + item.name + "] を回収。", "#88ff88");
+            document.getElementById('encounter-area').innerHTML = ""; // 前のボタンを掃除
+        }
+
+        // 2. 最後に「特殊遭遇（コンテナ・ショップ等）」を判定して、必要ならボタンを上書き表示する
+        if (!isEncountering && Math.random() < 0.30) { 
+            shopMaster.forEach(item => item.stock = 1); 
+containerCommands = ["JACKPOT", "MISS", "SUCCESS", "MISS", "SUCCESS", "CRITICAL"];
+            var fRoll = Math.random();
+            if (fRoll < 0.20) spawnEncounter("doc");
+            else if (fRoll < 0.40) spawnEncounter("vending");
+            else if (fRoll < 0.60) spawnEncounter("shop");
+            else if (fRoll < 0.80) spawnEncounter("container"); 
+            else spawnEncounter("junk");
+        }
+        update(); startCooldown();
+    }
+function rest() {
+    if (isEncountering) {
+        log("警告：戦闘中は休憩できない！", "#ff0055");
+        return;
+    }
+    if (isWaiting || hp <= 0) return;
+
+    days++;
+    hp = Math.min(hpMax, hp + 5); // HP回復
+if (currentHazard === 6) {
+        if (Math.random() < 0.30) {
+            hp -= 100;
+            log("休息を終末の光が貫いた。 [-100HP]", "#ff0000");
+        } else {
+            log("一時休息：機体の自己修復を実行。 [+5HP]", "#00ffff");
+        }
+    } else {
+        log("一時休息：機体の自己修復を実行。 [+5HP]", "#00ffff");
+    }
+    
+    // 休憩中は災害ダメージ（2:熱波, 3:酸性雨, 5:パンデミック）を無視
+    // ただし、環境の更新と日数の表示は行う
+    updateHazard();
+    document.getElementById('day-val').innerText = days;
+    
+        document.getElementById('encounter-area').innerHTML = ""; // エンカウント表示を消去
+    
+    update();
+    startCooldown(); // 共通のクールタイム開始
+}
+
+
+function getCard() {
+    const r = Math.random() * 100;
+    let targetIndex = 0;
+
+    // ミス20%, 攻撃20%, 会心20%, その他(8種)各5%
+    if (r < 20) targetIndex = 9;      // エラー
+    else if (r < 40) targetIndex = 0; // アサルト
+    else if (r < 60) targetIndex = 1; // クリティカル
+    else {
+        const remainIdx = [2, 3, 4, 5, 6, 7, 8, 10];
+        targetIndex = remainIdx[Math.floor(Math.random() * remainIdx.length)];
+    }
+
+    const card = cardMaster[targetIndex];
+    cardBox.push(card); 
+cardBox.sort((a, b) => a.id - b.id);
+    log("カード入手：[" + card.name + "]", "#e066ff");
+}
+                
+           function spawnEncounter(type) {
+        var area = document.getElementById('encounter-area');
+        if(type === "doc") { area.innerHTML = '<button class="action-btn full-width" onclick="repair()">緊急治療 [100₿]</button>'; }
+        else if(type === "vending") { area.innerHTML = '<button class="action-btn full-width" onclick="eat()">合成バー [50₿]</button>'; }
+        else if(type === "shop") { area.innerHTML = '<button class="action-btn full-width" style="color:var(--blue)" onclick="switchPage(\'page-shop\')">入店する [SHOP]</button>'; }
+        else if(type === "junk") { 
+            var target = itemMaster[Math.floor(Math.random()*itemMaster.length)]; 
+            area.innerHTML = '<button class="action-btn full-width" onclick="specialSell(\''+target.name+'\','+target.price*2+')">特別売却：'+target.name+'</button>'; 
+        }
+else if(type === "container") {
+            log("発見：放置された重装コンテナだ。", "#ffec3d");
+            area.innerHTML = `
+                <div style="display:flex; gap:5px;">
+                    <button class="action-btn" style="flex:2;" onclick="startContainerSlot()">回路をハッキング [SCAVENGE]</button>
+                    <button class="action-btn" style="flex:1; border-color:var(--blue); color:var(--blue);" onclick="useBombForContainer()">ボム使用</button>
+                </div>`;
+        }
+    }
+
+    function useItem(idx) {
+        var item = inventory[idx];
+        let boxId = "";
+// HP補強材の効果
+    if(item.type === "maxhp_item") {
+        hpMax += item.val; // 上限を50増やす
+        log("システム強化：最大HPが " + item.val + " 上昇！", "#ffec3d");
+        inventory.splice(idx, 1); // 消費
+        update(); // 画面更新
+        switchPage('page-main');
+        return;
+    }
+if (item.type === "mask") {
+    if (currentHazard === 6) {
+        log("エラー：この環境下ではマスクは無意味だ。", "#ff0000");
+        return;
+    }
+    currentHazard = -1;
+    hazardName = "FILTER";
+    filterCount = 10;
+    log("高性能マスクを装着。少しの間、環境の影響を受けない。", "#00ffff");
+    inventory.splice(idx, 1);
+    switchPage('page-main');
+    updateHazard();
+    return;
+}
+if(item.type === "card_pack") {
+    getCard(); // 既存のカード入手関数を呼び出す
+    inventory.splice(idx, 1);
+    update();
+    switchPage('page-main');
+    return;
+}
+// --- クリア処理の追加 ---
+    if(item.type === "clear") {
+const buttonsToDisable = [
+        'btn-scavenge', // 探索
+        'btn-rest',     // 休憩
+        'btn-inv',      // インベントリ
+        'btn-card'      // カードボックス
+    ];
+    
+    buttonsToDisable.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.disabled = true;
+    });
+
+inventory.splice(idx, 1);
+switchPage('page-main');
+log("警告:脱出を試みるあなたの前に最後の壁が立ちふさがる", "var(--red)");
+log(">> セキュリティ・オーバーライド：最終防衛機構が起動しました", "var(--red)");        
+        // 遭遇演出のために少し待ってからバトル画面へ（ここ重要）
+        setTimeout(() => {
+            startKadobaSequence(5);
+        }, 2000);
+    return;     
+    }
+        if(item.type === "hp") { 
+            let rec = Math.floor(Math.random()*(item.val[1]-item.val[0]))+item.val[0]; 
+            hp = Math.min(hpMax, hp+rec); boxId = "hp-box"; log(item.name + "： +" + rec + "HP", "#00ffff");
+        }
+        else if(item.type === "hg") { 
+            let rec = Math.floor(Math.random()*(item.val[1]-item.val[0]))+item.val[0]; 
+            hunger = Math.min(hgMax, hunger+rec); boxId = "hg-box"; log(item.name + "： +" + rec + "HG", "#00ffff");
+        }
+        else if(item.type.includes("max")) { 
+            if(item.type === "maxHp") { hpMax += item.val; boxId = "hp-box"; log(item.name + "：最大HP+" + item.val, "#ffec3d"); } 
+            else { hgMax += item.val; boxId = "hg-box"; log(item.name + "：最大HG+" + item.val, "#ffec3d"); }
+        }
+        switchPage('page-main');
+        const box = document.getElementById(boxId);
+        box.classList.add('flash-heal');
+        setTimeout(() => box.classList.remove('flash-heal'), 500);
+        inventory.splice(idx, 1); update();
+    }
+
+    function renderInventory() {
+        var list = document.getElementById('inv-list'); list.innerHTML = "";
+        if(inventory.length === 0) { list.innerHTML = "<div style='padding:20px;'>EMPTY</div>"; return; }
+        inventory.forEach((item, idx) => {
+            var useBtn = (item.type !== "none") ? `<button class="item-btn btn-use" onclick="useItem(${idx})">使用</button>` : "<span></span>";
+            
+            // --- 修正箇所：noSellフラグがない場合のみ売却ボタンを表示 ---
+            var sellBtn = "";
+            if (!item.noSell) {
+                sellBtn = `<button class="item-btn btn-sell" onclick="sellItem(${idx})">売却</button>`;
+            } else {
+                sellBtn = `<span style="font-size:9px; color:#555; width:50px; text-align:center;">販売不可</span>`;
+            }
+            
+            list.innerHTML += `<div class="item-row"><span>${item.name}<br><small>${item.price}₿</small></span><div class="btn-group">${useBtn}${sellBtn}</div></div>`;
+        });
+    }
+  function sellItem(idx) {
+    money += inventory[idx].price;
+    const msgArea = document.getElementById('inv-msg');
+    
+    // 表示の更新（削除前に実行）
+    msgArea.innerText = ">> " + inventory[idx].name + " を売却しました (+" + inventory[idx].price + "₿)";
+    msgArea.style.color = "var(--gold)"; 
+    
+    log("売却： " + inventory[idx].name + " +" + inventory[idx].price + "₿"); 
+
+    // 最後に削除
+    inventory.splice(idx, 1); 
+    renderInventory(); 
+    update(); 
+}  
+
+    function eat() { if(money>=50){ money-=50; hunger=hgMax; log("エネルギー回復。"); update(); document.getElementById('encounter-area').innerHTML=""; } }
+    function repair() { if(money>=100){ money-=100; hp=hpMax; log("機体修復。"); update(); document.getElementById('encounter-area').innerHTML=""; } }
+
+function startContainerSlot() {
+    // ボタンを消して重複実行を防ぐ
+    document.getElementById('encounter-area').innerHTML = "";
+    
+    isContainerMode = true;
+
+
+    startBattle("SECURE CONTAINER");
+}
+
+function renderCardBox() {
+    var list = document.getElementById('card-list');
+    list.innerHTML = "";
+    if(cardBox.length === 0) {
+        list.innerHTML = "<div style='padding:20px; color:#555;'>NO DATA</div>";
+        return;
+    }
+cardBox.sort((a, b) => a.id - b.id);
+
+    cardBox.forEach((card, idx) => {
+   list.innerHTML += `
+    <div class="item-row" style="border-color:var(--purple); display: flex; justify-content: space-between; align-items: center;">
+        <div style="cursor:pointer; flex-grow: 1;" onclick="showCardDetail(${idx})">
+            <span style="display:block;">${card.name}</span>
+            <small style="font-size:9px; color:var(--purple);">[詳細]</small>
+        </div>
+        <button class="item-btn btn-sell" 
+                style="margin-left: 10px; min-width: 60px;" 
+                onclick="sellCard(${idx})">売却</button>
+    </div>`;     
+        });
+}
+function sellCard(idx) {
+    const msgEl = document.getElementById('card-msg'); // メッセージ表示エリアを取得
+
+    // 6枚以下の制限チェック
+    if (cardBox.length <= 6) {
+        msgEl.innerText = "エラー：デッキ最小構成(6枚)を下回るため売却不可";
+        msgEl.style.color = "var(--red)";
+        return;
+    }
+    
+    const cardName = cardBox[idx].name; // 売却するカード名を保持
+    money += 50; 
+    cardBox.splice(idx, 1); // 配列から削除
+    
+    // --- ここでメッセージを更新 ---
+    msgEl.innerText = `>> [${cardName}] を売却しました (+50₿)`;
+    msgEl.style.color = "var(--gold)"; // 成功時はゴールドで強調
+    
+    log("カード売却：[" + cardName + "] +50₿", "#e066ff");
+    renderCardBox(); // リストを再描画
+    update();        // 所持金を更新
+}
+
+function showCardDetail(idx) {
+    const card = cardBox[idx];
+    const msgEl = document.getElementById('card-msg');
+    msgEl.innerText = card.name + ": " + card.desc;
+    msgEl.style.color = "var(--gold)"; // 説明文を強調
+}
+
+        function specialSell(n, p) { 
+        var idx = inventory.findIndex(i => i.name === n); 
+        if(idx > -1) { 
+            money += p; inventory.splice(idx, 1); 
+            log(n + "を特別価格で売却！ +" + p + "₿", "#ffec3d"); 
+            update(); document.getElementById('encounter-area').innerHTML = ""; 
+        } else { 
+            log("エラー： [" + n + "] を所持していません。", "#ff0055"); 
+        } 
+    }
+
+    function renderShop() {
+        var list = document.getElementById('shop-list');
+        list.innerHTML = "";
+        shopMaster.forEach((item) => {
+            let btnAttr = ""; let btnText = "購入"; let btnClass = "item-btn";
+            if (item.stock <= 0) { btnAttr = "disabled"; btnText = "SOLD OUT"; } 
+            else if (money < item.price) { btnClass += " no-money"; btnText = "不足"; }
+            list.innerHTML += `<div class="shop-item"><span>${item.name}<br>${item.price}₿</span><button ${btnAttr} class="${btnClass}" onclick="buyItem(${item.id})">${btnText}</button></div>`;
+        });
+    }
+
+function buyItem(id) {
+        var item = shopMaster.find(i => i.id === id);
+        if (item.stock > 0 && money >= item.price) {
+            money -= item.price; item.stock--; 
+                    
+        // 即座にクリアせず、インベントリに追加するだけにする
+        inventory.push(Object.assign({}, item));
+        
+        log("購入： " + item.name, "#00ffff");
+        renderShop(); update();
+    }
+}
+
+    function startCooldown() { 
+        isWaiting = true; 
+        var total = 10; var current = total; 
+        var btn = document.getElementById('btn-scavenge'); 
+var btnRest = document.getElementById('btn-rest');
+        var txt = document.getElementById('cooldown-txt');
+        var barBg = document.getElementById('reload-bar-bg');
+        var barFill = document.getElementById('reload-bar-fill');
+        
+        btn.disabled = true;
+btnRest.disabled = true;
+        barBg.style.display = "block";
+        barFill.style.width = "100%";
+        
+        var timer = setInterval(() => { 
+            current--;
+            txt.innerText = "SYSTEM RELOADING: " + current + "s"; 
+            barFill.style.width = (current / total * 100) + "%";
+            
+            if(current <= 0){ 
+                clearInterval(timer); 
+                isWaiting = false; 
+                if (!isEncountering) {
+            document.getElementById('btn-scavenge').disabled = false; 
+            document.getElementById('btn-rest').disabled = false;
+        }
+                txt.innerText = ""; 
+                barBg.style.display = "none";
+            } 
+        }, 1000); 
+    }
+
+// --- cardバトル進行管理変数 ---
+let isSlotSpinning = false;
+let slotTimer = null;
+let currentSlotIndex = 0;
+
+// --- cardバトル開始メイン ---
+async function startKadobaSequence(enemyIdx) {
+    kadobaActive = true;
+    currentEnemy = JSON.parse(JSON.stringify(bountyMaster[enemyIdx])); // ディープコピー
+
+const headerEl = document.getElementById('kadoba-header');
+    const osInterface = document.querySelector('#page-kadoba #os-interface');
+    
+    if (enemyIdx === 5) { // ラスボス（CORPO_GUARDIAN）の場合
+        headerEl.innerHTML = `
+            <div style="font-size: 10px; line-height: 1.2; margin-bottom:5px;">
+                <span style="color:var(--red); animation: flicker 0.1s infinite;">>> FATAL_ERROR: OVERRIDING_SYSTEM_LOG <<</span><br>
+                <span style="font-size: 20px; color: var(--red); font-weight: 900; text-shadow: 0 0 15px var(--red); letter-spacing: -1px;">
+                    ◤◢◤◢ 最終防衛兵器起動◤◢◤◢
+                </span><br>
+                <span style="color: var(--red); opacity: 0.8;">[ SYNC_RATE: 200% //TARGET: SCAVENGER ]</span>
+            </div>
+        `;
+        // 枠を赤く光らせる
+        if(osInterface) {
+            osInterface.style.borderColor = "var(--red)";
+            osInterface.style.boxShadow = "0 0 30px var(--red), inset 0 0 15px var(--red)";
+        }
+    } else { // 通常の敵の場合
+        headerEl.innerHTML = `
+            <div style="font-size: 10px; line-height: 1.2; margin-bottom:5px;">
+                <span style="color:var(--blue);">▶︎▶︎ NEURAL_LINK_ESTABLISHED: [READY]</span><br>
+                <span style="font-size: 18px; color: var(--gold); font-weight: bold; text-shadow: 2px 2px 0px #000;">
+                    【 CRITICAL_EXECUTION 】
+                </span><br>
+                <span style="color: var(--blue); opacity: 0.6;">-- ENEMY_DATA: ${currentEnemy.name} --</span>
+            </div>
+        `;
+        if(osInterface) {
+            osInterface.style.borderColor = "var(--blue)";
+            osInterface.style.boxShadow = "none";
+        }
+    }
+    
+    // 初期設定
+    pKadobaHp = hpMax;
+    pKadobaAtk = 30;
+    eKadobaHp = currentEnemy.hp;
+    eKadobaAtk = currentEnemy.atk;
+    kadobaTurn = "player";
+
+    // スロット選出（カードボックスからランダムに6枚）
+    let deck = [...cardBox]; 
+    
+    for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+pKadobaSlots = deck.slice(0, 6);
+
+    // 敵のスロット（マスターデータからIDを変換）
+    eKadobaSlots = currentEnemy.slots.map(id => cardMaster[id]);
+
+//プレイヤーのスロット表示を更新
+//プレイヤーと敵のスロットを同時に更新
+for (let i = 0; i < 6; i++) {
+    // プレイヤー側 (ps-0 〜 ps-5)
+    const pSlot = document.getElementById(`ps-${i}`);
+    pSlot.innerText = pKadobaSlots[i].name;
+    pSlot.style.background = "transparent";
+
+    // 敵側 (es-0 〜 es-5) を「同時」に処理
+    const eSlot = document.getElementById(`es-${i}`);
+    eSlot.innerText = eKadobaSlots[i].name;
+    eSlot.style.background = "transparent";
+}
+    
+    switchPage('page-kadoba');
+    const kLog = document.getElementById('kadoba-log');
+    kLog.innerHTML = `<div style="color:var(--gold)">> ${currentEnemy.name} が現れた!</div>`;
+    kLog.innerHTML += `<div style="color:var(--blue)">> カードボックスから6枚選出...</div>`;
+    updateKadobaUI();
+    
+    await new Promise(r => setTimeout(r, 1000));
+    kLog.innerHTML += `<div style="color:var(--blue)">> カード型端末より戦闘ログを抽出...
+</div>`
+await new Promise(r => setTimeout(r, 1000));
+    kLog.innerHTML += `<div style="color:var(--blue)">> 戦闘システム起動
+
+</div>`    
+    await new Promise(r => setTimeout(r, 1000));
+    kLog.innerHTML += `<div style="color:var(--blue)">> 戦闘開始!</div>`;
+await new Promise(r => setTimeout(r, 1000));
+    startSlotSpin();
+}
+
+function startSlotSpin() {
+    if (isSlotSpinning) return;
+    isSlotSpinning = true;
+    document.getElementById('btn-kadoba-stop').disabled = false;
+    
+    // プレイヤーか敵かによってIDの接頭辞を決定
+    const prefix = (kadobaTurn === "player") ? "ps-" : "es-";
+
+    slotTimer = setInterval(() => {
+        // 前の枠のハイライトを消す
+        document.getElementById(prefix + currentSlotIndex).style.background = "transparent";
+        document.getElementById(prefix + currentSlotIndex).style.color = "var(--green)";
+
+        // 次のインデックスへ
+        currentSlotIndex = (currentSlotIndex + 1) % 6;
+
+        // 現在の枠をハイライト（赤背景に白文字など）
+        document.getElementById(prefix + currentSlotIndex).style.background = "var(--green)";
+        document.getElementById(prefix + currentSlotIndex).style.color = "black";
+    }, 80); // 6枚見えているので、少しだけ速度を落とすと見やすくなります
+
+    if (kadobaTurn === "enemy") {
+        setTimeout(() => stopKadobaSlot(), 1000 + Math.random() * 1000);
+    }
+}
+
+// --- スロット停止（滑り演出あり） ---
+async function stopKadobaSlot() {
+    if (!isSlotSpinning) return;
+    clearInterval(slotTimer); // まずは高速タイマーを止める
+    isSlotSpinning = false;
+    document.getElementById('btn-kadoba-stop').disabled = true;
+
+    const prefix = (kadobaTurn === "player") ? "ps-" : "es-";
+
+    // 「滑り」演出
+    const slide = Math.floor(Math.random() * 3) + 1;
+    for (let i = 0; i < slide; i++) {
+        // 現在のハイライトを消す
+        document.getElementById(prefix + currentSlotIndex).style.background = "transparent";
+        document.getElementById(prefix + currentSlotIndex).style.color = "var(--green)";
+
+        await new Promise(r => setTimeout(r, 150 + (i * 100)));
+        currentSlotIndex = (currentSlotIndex + 1) % 6;
+
+        // 次の枠をハイライト
+        document.getElementById(prefix + currentSlotIndex).style.background = "var(--green)";
+        document.getElementById(prefix + currentSlotIndex).style.color = "black";
+    }
+
+    // 最終的に選ばれたカードを確定
+    const selectedCard = (kadobaTurn === "player") ? pKadobaSlots[currentSlotIndex] : eKadobaSlots[currentSlotIndex];
+    
+    // 決定したことがわかるように色を強調（例：ゴールドや点滅など）
+    document.getElementById(prefix + currentSlotIndex).style.background = "var(--gold)";
+    
+    setTimeout(() => {
+        executeCardEffect(selectedCard);
+    }, 500);
+}
+
+async function executeCardEffect(card) {
+    const kLog = document.getElementById('kadoba-log');
+    const isP = (kadobaTurn === "player");
+    let atk = isP ? pKadobaAtk : eKadobaAtk;
+    let targetHp = isP ? eKadobaHp : pKadobaHp;
+    
+    kLog.innerHTML += `<div>> ${isP ? 'SCAVENGER' : currentEnemy.name} の [${card.name}]！</div>`;
+    
+    let damage = 0;
+    const rnd = (min, max) => Math.random() * (max - min) + min;
+
+    switch(card.id) {
+        case 0: // アサルト
+            damage = Math.floor(atk * rnd(0.9, 1.1));
+            break;
+        case 1: // クリティカル
+            damage = Math.floor(atk * rnd(1.3, 1.7));
+            break;
+        case 2: // オーバーキル
+            damage = Math.floor(atk * rnd(1.8, 2.2));
+            break;
+        case 3: // デーモン契約
+            let selfHp = isP ? pKadobaHp : eKadobaHp;
+            if (selfHp > atk) {
+                if(isP) pKadobaHp -= atk; else eKadobaHp -= atk;
+                damage = Math.floor(atk * rnd(2.7, 3.0));
+                kLog.innerHTML += `<div style="color:var(--red)">> 代償としてHP減少！</div>`;
+            } else {
+                kLog.innerHTML += `<div>> HP不足！不発。</div>`;
+            }
+            break;
+        case 4: // グリッチ
+            let errors = (isP ? pKadobaSlots : eKadobaSlots).filter(c => c.id === 9).length;
+            damage = errors * atk;
+            break;
+        case 5: // シーケンスブロー
+            let hits = Math.floor(Math.random() * 3) + 1;
+            for(let i=0; i<hits; i++) damage += Math.floor(atk * rnd(0.9, 1.1));
+            kLog.innerHTML += `<div>> ${hits}連撃！</div>`;
+            break;
+        case 6: // 回路ショート
+            let halfHp = isP ? Math.floor(pKadobaHp / 2) : Math.floor(eKadobaHp / 2);
+            damage = halfHp;
+            break;
+        case 7: // ナノリペア
+            if(isP) pKadobaHp = Math.min(hpMax, pKadobaHp + 50);
+            else eKadobaHp = Math.min(currentEnemy.hp, eKadobaHp + 50);
+            kLog.innerHTML += `<div style="color:var(--blue)">> HPが回復した。</div>`;
+            break;
+        case 8: // オーバードライブ
+            if(isP) {
+                pKadobaHp = Math.floor(pKadobaHp / 2);
+                pKadobaAtk += 15;
+            } else {
+                eKadobaHp = Math.floor(eKadobaHp / 2);
+                eKadobaAtk += 15;
+            }
+            kLog.innerHTML += `<div style="color:var(--orange)">> リミッター解除！攻撃力+15。</div>`;
+            break;
+        case 9: // エラー
+            kLog.innerHTML += `<div>> 何も起きなかった。</div>`;
+            break;
+        case 10: // チャージ
+            if(isP) pKadobaAtk += 5; else eKadobaAtk += 5;
+            kLog.innerHTML += `<div>> 攻撃力が5蓄積された。</div>`;
+            break;
+    }
+
+    // ダメージ適用
+    if (damage > 0) {
+        if (isP) eKadobaHp -= damage; else pKadobaHp -= damage;
+        kLog.innerHTML += `<div>> ${damage} のダメージ！</div>`;
+    }
+
+    updateKadobaUI();
+    kLog.scrollTop = kLog.scrollHeight;
+
+    await new Promise(r => setTimeout(r, 1000));
+    checkKadobaEnd();
+}
+
+function updateKadobaUI() {
+    document.getElementById('p-kadoba-fill').style.width = Math.max(0, (pKadobaHp / hpMax * 100)) + "%";
+    document.getElementById('p-kadoba-hp-txt').innerText = pKadobaHp + "/" + hpMax;
+    document.getElementById('e-kadoba-fill').style.width = Math.max(0, (eKadobaHp / currentEnemy.hp * 100)) + "%";
+    document.getElementById('e-kadoba-hp-txt').innerText = eKadobaHp + "/" + currentEnemy.hp;
+    document.getElementById('e-kadoba-name').innerText = currentEnemy.name;
+}
+
+function checkKadobaEnd() {
+    if (eKadobaHp <= 0) {
+        finishKadoba(true);
+    } else if (pKadobaHp <= 0) {
+        finishKadoba(false);
+    } else {
+        // ターン交代
+        kadobaTurn = (kadobaTurn === "player") ? "enemy" : "player";
+        startSlotSpin();
+    }
+}
+
+async function finishKadoba(isWin) {
+    const kLog = document.getElementById('kadoba-log');
+    kadobaActive = false;
+
+    if (isWin) {
+        kLog.innerHTML += `<div style="color:var(--blue); font-size:14px;">> VICTORY!</div>`;
+kLog.scrollTop = kLog.scrollHeight;
+
+        if (currentEnemy.name === "CORPO_GUARDIAN") {
+kLog.innerHTML += `<div style="color:var(--red);font-size:14px;" >> >>[WARNING] 接続遮断を確認</div>`;
+kLog.scrollTop = kLog.scrollHeight;
+setTimeout(() => {
+    kLog.innerHTML += `<div style="color:var(--red);font-size:14px;">>> [SYNC] NEURAL LINK DISCONNECTED...</div>`;
+    kLog.scrollTop = kLog.scrollHeight;
+}, 500);
+
+// 2行目: 1.0秒後
+setTimeout(() => {
+    kLog.innerHTML += `<div style="color:var(--red);font-size:14px;">>> [AUTH] REVOKING ACCESS PRIVILEGES...</div>`;
+    kLog.scrollTop = kLog.scrollHeight;
+}, 1000);
+
+// 3行目: 1.5秒後
+setTimeout(() => {
+    kLog.innerHTML += `<div style="color:var(--red);font-size:14px;">>> [LOG] 起動シーケンスエントリの抹消を確認</div>`;
+    kLog.scrollTop = kLog.scrollHeight;
+}, 1500);
+
+// 4行目: 2.0秒後
+setTimeout(() => {
+    kLog.innerHTML += `<div style="color:var(--red);font-size:14px;">>> [SYS] CLOSING BACKDOOR PORT: 0x8080...</div>`;
+    kLog.scrollTop = kLog.scrollHeight;
+}, 2000);
+
+// 5行目: 2.5秒後
+setTimeout(() => {
+    kLog.innerHTML += `<div style="color:var(--red);font-size:14px;">>> [KERNEL] TERMINATING PROCESSES...</div>`;
+    kLog.scrollTop = kLog.scrollHeight;
+}, 2500);
+
+// 6行目: 3.0秒後
+setTimeout(() => {
+    kLog.innerHTML += `<div style="color:var(--red);font-size:14px;">>> [DATA] メモリ内の全バイナリクリア</div>`;
+    kLog.scrollTop = kLog.scrollHeight;
+}, 3000);
+
+// 7行目: 3.5秒後
+setTimeout(() => {
+    kLog.innerHTML += `<div style="color:var(--red);font-size:14px;">>> [VITAL] PULSE MONITORING STOPPED.</div>`;
+    kLog.scrollTop = kLog.scrollHeight;
+}, 3500);
+
+// 8行目: 4.0秒後
+setTimeout(() => {
+    kLog.innerHTML += `<div style="color:var(--red);font-size:14px;">>> [STATE] SYSTEM GOING DARK. システム停止。</div>`;
+    kLog.scrollTop = kLog.scrollHeight;
+}, 4000);
+
+// 9行目: 4.5秒後
+setTimeout(() => {
+    kLog.innerHTML += `<div style="color:var(--red);font-size:14px;">>> GOODBYE, SCAVENGER.</div>`;
+    kLog.scrollTop = kLog.scrollHeight;
+}, 4500);
+
+// 最後に画面遷移: 6.0秒後
+setTimeout(() => {
+    // ここでクリアページに飛ばす（関数名は適宜合わせてください）
+    switchPage('page-clear'); 
+}, 7000);
+                   } else {
+            money += currentEnemy.prize;
+            // カードパックを1つ追加（所持品に追加する処理を既存のinventory形式に合わせる）
+            inventory.push(Object.assign({}, shopMaster[4]));
+            log(`賞金首 ${currentEnemy.name} を撃破！ ${currentEnemy.prize}₿ とカードパックを獲得。`, "var(--gold)");
+            setTimeout(() => {
+                switchPage('page-main');
+                update();
+            }, 3000);
+        }
+    } else {
+        kLog.innerHTML += `<div style="color:var(--red); font-size:14px;">> DEFEAT...</div>`;
+        setTimeout(() => {
+            document.getElementById('dead-reason').innerText = `TERMINATED BY ${currentEnemy.name}`;
+            switchPage('page-dead');
+        }, 2000);
+    }
+}
+
+    // --- バトルシステム用変数 ---
+// --- バトルシステム用変数 ---
+var battleIdx = 0, isBattleSpinning = false, battleTimer = null, isContainerMode = false;
+
+// スロットに表示する文字（ラベル）
+const battleLabels = ["COUNTER (反撃)", "BLOCK (防御)", "CRITICAL (強奪)", "BLOCK (防御)", "FAILED (失敗)", "COUNTER (反撃)"];
+const containerLabels = ["JACKPOT (大当)", "STUN (警報)", "SUCCESS (成功)", "STUN (警報)", "SUCCESS (成功)", "TRAP (爆発)"];
+
+// 通常戦闘ボム（即時解決）
+function useBomb() {
+    var bombIdx = inventory.findIndex(i => i.name === "電磁ボム");
+    if (bombIdx > -1) {
+        inventory.splice(bombIdx, 1);
+        log("ボム使用：敵の回路を焼切った。", "#00ffff");
+        isEncountering = false;
+        document.getElementById('btn-inv').disabled = false;
+        document.getElementById('encounter-area').innerHTML = "";
+        update();
+    } else {
+        log("エラー：電磁ボムを所持していません。", "#ff0055");
+    }
+}
+
+// コンテナ用ボム（コード内の定義通り、コマンドを書き換えてからスロット開始）
+function useBombForContainer() {
+    var bombIdx = inventory.findIndex(i => i.name === "電磁ボム");
+    if (bombIdx > -1) {
+        inventory.splice(bombIdx, 1);
+        log("ボム使用：回路をハック。安全なパターンに書き換えた！", "#ffec3d");
+        
+        // コード内のロジックに基づき、containerCommands を書き換え
+        containerCommands = ["JACKPOT", "SUCCESS", "SUCCESS", "SUCCESS", "SUCCESS", "JACKPOT"];
+        
+        // 書き換えたので、スロットを開始
+        startContainerSlot(); 
+    } else {
+        log("エラー：電磁ボムがありません。", "#ff0055");
+    }
+}
+
+// 開始処理：ここで文字を毎回リセットします
+function startBattle(enemyName) {
+    document.getElementById('battle-title').innerText = "VS " + enemyName;
+    document.getElementById('battle-log').innerText = "";
+    
+    // 【修正後】文字の混合を防ぎつつ、現在のデータ（ボム反映後）を表示する
+    for(let i=0; i<6; i++) {
+        let label = "";
+        if (isContainerMode) {
+            // コンテナモードなら、ボムで書き換えられた可能性のある配列を見に行く
+            let cmd = containerCommands[i];
+            if (cmd === "JACKPOT") label = "JACKPOT (大当)";
+            else if (cmd === "SUCCESS") label = "SUCCESS (成功)";
+            else if (cmd === "MISS" || cmd === "STUN") label = "STUN (警報)";
+            else label = "TRAP (爆発)";
+        } else {
+            // 通常戦闘なら、固定の戦闘用ラベルを表示する
+            label = battleLabels[i];
+        }
+        document.getElementById('bs-' + i).innerText = label;
+    }
+
+document.getElementById('btn-scavenge').disabled = true; // 念のため探索も無効化
+    document.getElementById('btn-rest').disabled = true;
+    switchPage('page-battle');
+    document.getElementById('btn-spin').disabled = false;
+    document.getElementById('btn-spin').innerText = "STOP";
+    isBattleSpinning = true;
+    
+    function spin() {
+        if(!isBattleSpinning) return;
+        for(let i=0; i<6; i++) {
+            let el = document.getElementById('bs-' + i);
+            el.style.background = "transparent"; el.style.color = "var(--green)";
+        }
+        battleIdx = (battleIdx + 1) % 6;
+        let activeEl = document.getElementById('bs-' + battleIdx);
+        activeEl.style.background = "var(--red)"; 
+        activeEl.style.color = "#000";
+        battleTimer = setTimeout(spin, 70);
+    }
+    spin();
+}
+
+function handleBattleSpin() {
+    if(!isBattleSpinning) return;
+    isBattleSpinning = false;
+    clearTimeout(battleTimer);
+    document.getElementById('btn-spin').disabled = true;
+    
+    let slowdown = 70;
+    const halt = () => {
+        for(let i=0; i<6; i++) {
+            document.getElementById('bs-' + i).style.background = "transparent";
+            document.getElementById('bs-' + i).style.color = "var(--green)";
+        }
+        battleIdx = (battleIdx + 1) % 6;
+        document.getElementById('bs-' + battleIdx).style.background = "var(--red)";
+        document.getElementById('bs-' + battleIdx).style.color = "#000";
+        
+        slowdown += Math.floor(Math.random() * 40) + 70;
+        if(slowdown < 400) setTimeout(halt, slowdown);
+        else resolveBattle();
+    };
+    halt();
+}
+
+// コマンドの配列定義vr45
+var battleCommands = ["COUNTER", "BLOCK", "CRITICAL", "BLOCK", "FAILED", "COUNTER"];
+
+function resolveBattle() {
+    isEncountering = false; 
+
+    if (isContainerMode) {
+        let res = containerCommands[battleIdx];
+        isContainerMode = false;
+        let getMoney = 0; let msg = "";
+
+        if (res === "JACKPOT") {
+            getMoney = Math.floor(Math.random() * 301) + 150;
+            money += getMoney;
+            msg = "JACKPOT！高額チップを抽出した。 [+" + getMoney + "₿]";
+        } else if (res === "SUCCESS") {
+            getMoney = Math.floor(Math.random() * 201);
+            money += getMoney;
+            msg = "解錠成功。データを売却した。 [+" + getMoney + "₿]";
+        } else if (res === "MISS" || res === "STUN") {
+            hp -= 5;
+            msg = "警報作動！電気ショックを受けた。 [-5HP]";
+        } else if (res === "CRITICAL" || res === "TRAP") {
+            hp -= 20;
+            msg = "致命的失敗！コンテナが爆発した。 [-20HP]";
+        }
+        document.getElementById('battle-log').innerText = ">> " + msg;
+        log("コンテナ： " + msg, (res === "MISS" || res === "STUN" || res === "CRITICAL" || res === "TRAP" ? "#ff0055" : "#ffec3d"));
+    } else {
+        let res = battleCommands[battleIdx];
+        let msg = ""; let logColor = "#ff0055";
+
+        if(res === "COUNTER") { msg = "反撃成功！敵を撃退。"; logColor = "#00ff41"; }
+        else if(res === "BLOCK") { hp -= 5; msg = "防御成功。軽微な損傷。 [-5HP]"; logColor = "#00ffff"; }
+        else if(res === "CRITICAL") { 
+            let loss = Math.floor(money * 0.1) + Math.floor(Math.random() * 301);
+            money -= loss;
+            msg = "強奪：データを焼かれ " + loss + "₿ を紛失！";
+if (money <0) { 
+                setTimeout(() => {
+                    document.getElementById('dead-reason').innerText = "BANKRUPTCY (強奪により破綻)";
+                    switchPage('page-dead');
+                }, 1500);
+            }
+        } else { hp -= 20; msg = "迎撃失敗！致命的な損傷。 [-20HP]"; }
+        document.getElementById('battle-log').innerText = ">> " + msg;
+        log("戦闘終了: " + msg, logColor);
+    }
+
+    update();
+    setTimeout(() => {
+        if(hp > 0 && money >= 0) {
+            document.getElementById('btn-inv').disabled = (currentHazard === 4);
+document.getElementById('btn-scavenge').disabled = false; // 追加
+        document.getElementById('btn-rest').disabled = false;
+            switchPage('page-main');
+            document.getElementById('encounter-area').innerHTML = ""; 
+        }
+    }, 1500);
+}
+</script>
+</body>
+</html>
