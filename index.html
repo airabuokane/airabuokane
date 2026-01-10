@@ -25,6 +25,7 @@
             min-height: 100vh; 
             overflow: hidden; 
             position: relative;
+touch-action: manipulation;
         }
         .page { 
             display: none; 
@@ -554,8 +555,7 @@ position: relative;
 <div id="page-battle" class="page">
     <div id="os-interface" style="border-color: var(--red); box-shadow: 0 0 20px var(--red);">
         <h3 id="battle-title" style="margin:0; color:var(--red); border-bottom: 1px solid var(--red);">DEFENSE SYSTEM</h3>
-        <p style="font-size: 10px; margin: 10px 0;">スロットを止めて迎撃せよ</p>
-        
+        <p id="battle-instruction" style="font-size: 10px; margin: 10px 0;">スロットを止めて迎撃せよ</p>        
         <div id="battle-slots" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 15px;">
             <div id="bs-0" class="stat-box" style="text-align:center;">COUNTER (反撃)</div>
             <div id="bs-1" class="stat-box" style="text-align:center;">BLOCK (防御)</div>
@@ -885,9 +885,14 @@ cardBox = [];
         }
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
-        if(pageId === 'page-inv') renderInventory();
-        if(pageId === 'page-shop') renderShop();
-if(pageId === 'page-card') renderCardBox();
+        if(pageId === 'page-inv') 
+document.getElementById('inv-msg').innerText = "";
+renderInventory();
+        if(pageId === 'page-shop') 
+renderShop();
+if(pageId === 'page-card') 
+document.getElementById('card-msg').innerText = "";
+renderCardBox();
     }
 
     function log(msg, color = "#00ff41") {
@@ -981,9 +986,9 @@ function scavenge() {
         days++;
 
 if (days === 50) {
-        log("【記録】50日生存。ここで学んだことは、この世界は悪夢だということだ。", "#00ffff");
+        log("【記録】50日生存。ここで学んだことは、この世界は悪夢だということだ。", "#ffffff");
     } else if (days === 100) {
-        log("【記録】100日生存。悪夢のような世界だとしても、あなたはまだ生きている。", "#ffec3d");
+        log("【記録】100日生存。悪夢のような世界だとしても、あなたはまだ生きている。", "#ffffff");
     } else if (days === 149) {
         log("【記録】149日生存。どうやらここが悪夢の終点のようだ。この先には何があるのか、それとも何もないのか。", "#ff0055");
     }else if (days === 200) {
@@ -1820,6 +1825,9 @@ function startBattle(enemyName) {
     for(let i=0; i<6; i++) {
         let label = "";
         if (isContainerMode) {
+document.getElementById('battle-instruction').innerText = "スロットを止めて解錠せよ"; // ここを追加
+document.getElementById('battle-title').style.color = "var(--gold)";
+document.getElementById('battle-title').style.borderColor = "var(--gold)";
             // コンテナモードなら、ボムで書き換えられた可能性のある配列を見に行く
             let cmd = containerCommands[i];
             if (cmd === "JACKPOT") label = "JACKPOT (大当)";
@@ -1827,6 +1835,9 @@ function startBattle(enemyName) {
             else if (cmd === "MISS" || cmd === "STUN") label = "STUN (警報)";
             else label = "TRAP (爆発)";
         } else {
+document.getElementById('battle-instruction').innerText = "スロットを止めて迎撃せよ"; // ここを追加
+document.getElementById('battle-title').style.color = "var(--red)";
+document.getElementById('battle-title').style.borderColor = "var(--red)";
             // 通常戦闘なら、固定の戦闘用ラベルを表示する
             label = battleLabels[i];
         }
