@@ -824,12 +824,12 @@ let eKadobaSlots = []; // 敵の6枚
 
 // --- 賞金首マスターデータ ---
 const bountyMaster = [
-    { name: "CRAZY_JIMMY", atk: 30, hp: 100, slots: [9, 4, 4, 10, 10, 1], prize: 100 },
-    { name: "NEON_REAPER", atk: 30, hp: 100, slots: [9, 9, 0, 0, 7, 2], prize: 150 },
-    { name: "SHADOW_GLITCH", atk: 30, hp: 150, slots: [9, 9, 9, 9, 9, 4], prize: 250 },
-    { name: "CHROME_VIPER", atk: 30, hp: 180, slots: [0, 0, 1, 6, 6, 10], prize: 350 },
+    { name: "CRAZY_JIMMY", atk: 30, hp: 100, slots: [9, 0, 0, 10, 10, 1], prize: 100 },
+    { name: "NEON_REAPER", atk: 30, hp: 100, slots: [9, 9, 4, 0, 7, 2], prize: 150 },
+    { name: "SHADOW_GLITCH", atk: 30, hp: 150, slots: [9, 0, 4, 4, 0, 9], prize: 250 },
+    { name: "CHROME_VIPER", atk: 30, hp: 200, slots: [0, 0, 1, 6, 6, 10], prize: 350 },
     { name: "GHOSTWIRE_JAX", atk: 45, hp: 300, slots: [5, 8, 5, 8, 5, 8], prize: 500 },
-    { name: "CORPO_GUARDIAN", atk: 40, hp: 260, slots: [9, 0, 1, 1, 2, 3], prize: 0 }
+    { name: "CORPO_GUARDIAN", atk: 40, hp: 250, slots: [9, 0, 1, 1, 2, 3], prize: 0 }
 ];
 
 // update関数のクリア条件を削除（アイテム購入時に判定させるため）
@@ -991,7 +991,7 @@ if (days === 50) {
     } else if (days === 100) {
         log("【記録】100日生存。悪夢のような世界だとしても、あなたはまだ生きている。", "#ffffff");
     } else if (days === 149) {
-        log("【記録】149日生存。どうやらここが悪夢の終点のようだ。この先には何があるのか、それとも何もないのか。", "#ff0055");
+        log("【記録】149日生存。どうやらここが悪夢の終点のようだ。この先には何があるのか、それとも何もないのか。", "#ffffff");
     }else if (days === 200) {
         log("【記録】200日生存。終末に晒されたこの星にも、ようやく終りが近づいてきたようだ。すべてが崩壊し降り注ぐ瓦礫の雨の隙間から、最後にほんの少しだけ夜空が見えた気がした。", "#ffffff");
 const allButtons = document.querySelectorAll('button');
@@ -1145,7 +1145,7 @@ if (currentHazard === 6) {
     } else if (days === 100) {
         log("【記録】100日生存。悪夢のような世界だとしても、あなたはまだ生きている。", "#ffffff");
     } else if (days === 149) {
-        log("【記録】149日生存。どうやらここが悪夢の終点のようだ。この先には何があるのか、それとも何もないのか。", "#ff0055");
+        log("【記録】149日生存。どうやらここが悪夢の終点のようだ。この先には何があるのか、それとも何もないのか。", "#ffffff");
     }else if (days === 200) {
         log("【記録】200日生存。終末に晒されたこの星にも、ようやく終りが近づいてきたようだ。すべてが崩壊し降り注ぐ瓦礫の雨の隙間から、最後にほんの少しだけ夜空が見えた気がした。", "#ffffff");
 const allButtons = document.querySelectorAll('button');
