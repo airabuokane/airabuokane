@@ -828,7 +828,7 @@ const bountyMaster = [
     { name: "NEON_REAPER", atk: 30, hp: 100, slots: [9, 9, 0, 0, 7, 2], prize: 150 },
     { name: "SHADOW_GLITCH", atk: 30, hp: 150, slots: [9, 9, 9, 9, 9, 4], prize: 250 },
     { name: "CHROME_VIPER", atk: 30, hp: 180, slots: [0, 0, 1, 6, 6, 10], prize: 350 },
-    { name: "GHOSTWIRE_JAX", atk: 45, hp: 300, slots: [5, 8, 5, 8, 5, 8], prize: 666 },
+    { name: "GHOSTWIRE_JAX", atk: 45, hp: 300, slots: [5, 8, 5, 8, 5, 8], prize: 500 },
     { name: "CORPO_GUARDIAN", atk: 40, hp: 260, slots: [9, 0, 1, 1, 2, 3], prize: 0 }
 ];
 
@@ -1130,7 +1130,7 @@ function rest() {
     days++;
     hp = Math.min(hpMax, hp + 5); // HP回復
 if (currentHazard === 6) {
-        if (Math.random() < 0.30) {
+        if (Math.random() < 0.35) {
             hp -= 100;
             log("休息を終末の光が貫いた。 [-100HP]", "#ff0000");
         } else {
@@ -1139,7 +1139,26 @@ if (currentHazard === 6) {
     } else {
         log("一時休息：機体の自己修復を実行。 [+5HP]", "#00ffff");
     }
-    
+
+    if (days === 50) {
+        log("【記録】50日生存。ここで学んだことは、この世界は悪夢だということだ。", "#ffffff");
+    } else if (days === 100) {
+        log("【記録】100日生存。悪夢のような世界だとしても、あなたはまだ生きている。", "#ffffff");
+    } else if (days === 149) {
+        log("【記録】149日生存。どうやらここが悪夢の終点のようだ。この先には何があるのか、それとも何もないのか。", "#ff0055");
+    }else if (days === 200) {
+        log("【記録】200日生存。終末に晒されたこの星にも、ようやく終りが近づいてきたようだ。すべてが崩壊し降り注ぐ瓦礫の雨の隙間から、最後にほんの少しだけ夜空が見えた気がした。", "#ffffff");
+const allButtons = document.querySelectorAll('button');
+    allButtons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.display = "none"; // いっそ消してしまう
+    });
+setTimeout(() => {
+    switchPage('page-clear'); 
+}, 8000);
+return;
+}
+
     // 休憩中は災害ダメージ（2:熱波, 3:酸性雨, 5:パンデミック）を無視
     // ただし、環境の更新と日数の表示は行う
     updateHazard();
