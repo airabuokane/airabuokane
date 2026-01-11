@@ -700,7 +700,7 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
         "軌道エレベーターの光が、厚い雲の向こうで鈍く明滅している。",
         "その渇き、電解質飲料『ボルト・アップ』で焼き切れ。",
         "チップの接続部が熱い。また安物の再生コネクタを掴まされたか。",
-        "愛するペットにAIの知能を。合成犬『ネオ・ワン』新登場。",
+        "賞金首との戦いでは体力が重要だ。確か増強剤があったはず。",
         "『CEOの首に賞金10,000,000₿』。ホロ・ポスターが揺れている。",
         "カードをいっぱい持っていようが、実践で使えるのは６枚までだ",
         "眠らない街の、眠らないあなたへ。覚醒剤『オーバークロック』。",
@@ -722,7 +722,7 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
     　　"賞金首もピンキリだ。ジャンク同然の奴から、本物の怪物までな。",
    　　 "賞金首は歴戦の猛者だ。ジミー？あんなバカは放っておけ。",
    　　 "カードの戦闘記録を同期すれば、賞金首にも勝てるはずだ。",
-    　　"脱出するなら企業の防御兵器に怯えろ。見つかれば即、塵だ。",
+    　　"脱出するなら企業の防御兵器に怯えろ。見つかれば即塵だ。",
     　　"放置コンテナの噂だ。中身は宝か、それとも悪質なトラップか。",
     　　"電磁ボムは裏切らない。予備のチップを数個買っておけ。",
    　　 "賞金首を狩るなら、体力だけは限界まで高めておけ。",
@@ -778,7 +778,7 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
         {name: "点滴薬", price: 40, type: "hp", val: [20, 35]},
         {name: "乾燥肉", price: 15, type: "hg", val: [10, 20]},
         // --- 新規追加アイテム ---
-        {name: "錆びたネジ", price: 45, type: "none"},
+        {name: "焦げたチップ", price: 45, type: "none"},
         {name: "鉄の塊", price: 30, type: "none"},
         {name: "新品の歯車", price: 40, type: "none"},
         {name: "シャキザク", price: 30, type: "hg", val: [30, 50]},
@@ -794,7 +794,7 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
         {id: 2, name: "電磁ボム", price: 40, type: "bomb", stock: 1, noSell: true},
 {id: 3, name: "高性能マスク", price: 100, type: "mask", stock: 1, noSell: true},
 {id: 4, name: "カードパック", price: 150, type: "card_pack", stock: 1, noSell: true},
-{id: 5, name: "HP補強材", price: 200, type: "maxhp_item", val: 50, stock: 1, noSell: true},
+{id: 5, name: "HP増強剤", price: 200, type: "maxhp_item", val: 50, stock: 1, noSell: true},
         {id: 6, name: "脱出用ICカード", price: 1000, type: "clear", stock: 1, noSell: true}
     ];
 
@@ -960,7 +960,7 @@ const descriptions = {
     document.getElementById('btn-inv').disabled = (currentHazard === 4);
     
     // カラー設定
-    const colors = { "-1":"#00ffff", 0:"#00ffff", 1:"#00ff41", 2:"#ffaa00", 3:"#ff0055", 4:"#ff0055", 5:"#ff0055", 6:"#ff0000" };
+    const colors = { "-1":"#00ffff", 0:"#00ffff", 1:"#00ff41", 2:"#ffaa00", 3:"#ffaa00", 4:"#ff5522", 5:"#ff0055", 6:"#ff0000" };
     hDisplay.style.color = colors[currentHazard];
 }
 
@@ -1129,6 +1129,10 @@ function rest() {
 
     days++;
     hp = Math.min(hpMax, hp + 5); // HP回復
+let feedEl = document.getElementById('street-feed');
+    // streetMessages配列からランダムに1つ選ぶ
+    let randomMsg = streetMessages[Math.floor(Math.random() * streetMessages.length)];
+    feedEl.innerText = ">> " + randomMsg;
 if (currentHazard === 6) {
         if (Math.random() < 0.35) {
             hp -= 100;
@@ -1193,7 +1197,7 @@ cardBox.sort((a, b) => a.id - b.id);
            function spawnEncounter(type) {
         var area = document.getElementById('encounter-area');
         if(type === "doc") { area.innerHTML = '<button class="action-btn full-width" onclick="repair()">緊急治療 [100₿]</button>'; }
-        else if(type === "vending") { area.innerHTML = '<button class="action-btn full-width" onclick="eat()">合成バー [50₿]</button>'; }
+        else if(type === "vending") { area.innerHTML = '<button class="action-btn full-width" onclick="eat()">濃縮合成バー [50₿]</button>'; }
         else if(type === "shop") { area.innerHTML = '<button class="action-btn full-width" style="color:var(--blue)" onclick="switchPage(\'page-shop\')">入店する [SHOP]</button>'; }
         else if(type === "junk") { 
             var target = itemMaster[Math.floor(Math.random()*itemMaster.length)]; 
@@ -1212,7 +1216,7 @@ else if(type === "container") {
     function useItem(idx) {
         var item = inventory[idx];
         let boxId = "";
-// HP補強材の効果
+// HP増強剤の効果
     if(item.type === "maxhp_item") {
         hpMax += item.val; // 上限を50増やす
         log("システム強化：最大HPが " + item.val + " 上昇！", "#ffec3d");
