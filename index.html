@@ -683,7 +683,7 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
         "戦闘で奪われるのはデータの1割程度だが命取りになるぞ。",
         "どうしても戦いたくないなら、電磁ボムを積み込んでおくんだな。",
         "腹が減りすぎると生命維持装置に負荷がかかる。何か胃に入れておけ。",
-        "合成酒『シン・ブルー』。今夜の悪夢を、鮮やかな青に塗り替える。",
+        "150日後に終焉が訪れるらしいから準備してるんだ。200日までは生きられる量があるぜ",
         "【通知】第4区画の酸素濃度低下。呼吸器のフィルタ交換を推奨します。",
         "あいつ、義体のローンが払えなくて昨日回収されたらしいぜ……。",
         "意識を永遠のクラウドへ。タナトス・テクノロジー社が導きます。",
@@ -703,7 +703,7 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
         "賞金首との戦いでは体力が重要だ。確か増強剤があったはず。",
         "『CEOの首に賞金10,000,000₿』。ホロ・ポスターが揺れている。",
         "カードをいっぱい持っていようが、実践で使えるのは６枚までだ",
-        "眠らない街の、眠らないあなたへ。覚醒剤『オーバークロック』。",
+        "ELって名前の最新型アンドロイドを買ったが不良品だったようだ。",
         "あと1000₿。それだけあれば、このゴミ溜めからおさらばできる。",
         "企業の株価が過去最高値を更新。下層区の配給カットが決定。",
         "古い義体、高価買い取り。 ―― 2番街の屑鉄屋",
@@ -730,6 +730,7 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
     　　"店で買ったものは売れない。よく考えてから₿を決済しろ。",
     　　"格納庫がロックされた！配給もねえ、どうやって腹を満たせと？",
     　　"店は便利だ。毎日通っていたいぜ。",
+　　　　"当然だがELは俺の嫁だ。",
         "この街のネオンは、住民の絶望をエネルギーにして光っているんだ",
         "ハッカーどものせいで、昨日は第8ゲートが一日中開かなかった。",
         "下層区の配給食、最近はプラスチックみたいな食感になってきたな。",
@@ -810,7 +811,8 @@ const cardMaster = [
 { id: 7, name: "ナノリペア", desc: "HPを中回復する", type: "バフ" },
 { id: 8, name: "オーバードライブ", desc: "自身のHPを消費して攻撃力大アップ", type: "バフ" },
 { id: 9, name: "エラー", desc: "何も起きない", type: "バフ" },
-{ id: 10, name: "チャージ", desc: "攻撃力小アップ", type: "バフ" }
+{ id: 10, name: "チャージ", desc: "攻撃力小アップ", type: "バフ" },
+{ id: 11, name:"エルビーム", desc: "ランダムなダメージを与エル", type: "攻撃" }
 ];
 
 // --- 追加する変数 ---
@@ -821,6 +823,8 @@ let eKadobaHp = 0, eKadobaAtk = 0;
 let currentEnemy = null;
 let pKadobaSlots = []; // 選出された6枚
 let eKadobaSlots = []; // 敵の6枚
+let karma = 0;
+
 
 // --- 賞金首マスターデータ ---
 const bountyMaster = [
@@ -1108,15 +1112,17 @@ document.getElementById('btn-rest').disabled = true;
         }
 
         // 2. 最後に「特殊遭遇（コンテナ・ショップ等）」を判定して、必要ならボタンを上書き表示する
-        if (!isEncountering && Math.random() < 0.30) { 
+        if (!isEncountering && Math.random() < 0.36) { 
             shopMaster.forEach(item => item.stock = 1); 
 containerCommands = ["JACKPOT", "MISS", "SUCCESS", "MISS", "SUCCESS", "CRITICAL"];
             var fRoll = Math.random();
-            if (fRoll < 0.20) spawnEncounter("doc");
-            else if (fRoll < 0.40) spawnEncounter("vending");
-            else if (fRoll < 0.60) spawnEncounter("shop");
-            else if (fRoll < 0.80) spawnEncounter("container"); 
-            else spawnEncounter("junk");
+        if (fRoll < 0.17) spawnEncounter("doc");
+    else if (fRoll < 0.34) spawnEncounter("vending");
+    else if (fRoll < 0.51) spawnEncounter("shop");
+    else if (fRoll < 0.68) spawnEncounter("container");
+    else if (fRoll < 0.83) spawnEncounter("junk");
+    else spawnEncounter("el"); 
+    
         }
         update(); startCooldown();
     }
@@ -1210,8 +1216,126 @@ else if(type === "container") {
                     <button class="action-btn" style="flex:2;" onclick="startContainerSlot()">回路をハッキング [SCAVENGE]</button>
                     <button class="action-btn" style="flex:1; border-color:var(--blue); color:var(--blue);" onclick="useBombForContainer()">ボム使用</button>
                 </div>`;
+  }else if(type === "el") {
+        triggerElEvent(); // ELイベント開始
         }
     }
+
+// ELイベントのメインロジック（ボタン生成）
+function triggerElEvent() {
+    var area = document.getElementById('encounter-area');
+    let html = "";
+
+    // 第1回遭遇 (カルマ0)
+    if (karma === 0) {
+        log("遭遇：廃棄場の奥底。貴方は偶然アンドロイドを掘り起こした。名前は「EL」と呼ぶらしい。", "#ffd1dc");
+        html = `
+            <div style="display:flex; gap:5px;">
+                <button class="action-btn" style="flex:1;" onclick="elResult('起動する')">起動する</button>
+                <button class="action-btn" style="flex:1;" onclick="elResult('略奪する')">略奪する</button>
+            </div>`;
+    }
+    // 第2回遭遇 (カルマ1, 2)
+    else if (karma === 1) {
+        log("EL's：数日後、路地裏で暴行を受けていたELを発見する。助け出したものの、彼女の機体は無残に損壊していた。", "#ffd1dc");
+        html = `<div style="display:flex; gap:5px;"><button class="action-btn" style="flex:1;" onclick="elResult('修理する')">修理する</button><button class="action-btn" style="flex:1;" onclick="elResult('戦闘を教育')">戦闘を教育</button></div>`;
+    } else if (karma === 2) {
+        log("EL's：数日後、路地裏で半壊したELが這い寄ってきた。剥き出しの配線を火花させ、貴方を睨んでいる。", "#ffd1dc");
+        html = `<div style="display:flex; gap:5px;"><button class="action-btn" style="flex:1;" onclick="elResult('修理する')">修理する</button><button class="action-btn" style="flex:1;" onclick="elResult('追撃する')">追撃する</button></div>`;
+    }
+    // 第3回遭遇 (カルマ3, 4, 5, 6)
+    else if (karma === 3) {
+        log("EL's：数週間後、ELが企業の追跡者に包囲されている。彼女は震える手で貴方の裾を掴んだ。", "#ffd1dc");
+        html = `<div style="display:flex; flex-direction:column; gap:5px;"><button class="action-btn" onclick="elResult('共に逃亡')">共に逃亡</button><button class="action-btn" onclick="elResult('共に戦闘')">共に戦闘</button><button class="action-btn" onclick="elResult('差し出す')">差し出す</button></div>`;
+    } else if (karma === 4) {
+        log("EL's：数週間後。ELは冷徹な「賞金首」として噂になっていた。企業が彼女を破壊すべく特殊部隊を投入する。", "#ffd1dc");
+        html = `<div style="display:flex; flex-direction:column; gap:5px;"><button class="action-btn" onclick="elResult('記憶を消す')">記憶を消す</button><button class="action-btn" onclick="elResult('見守る')">見守る</button><button class="action-btn" onclick="elResult('密告する')">密告する</button></div>`;
+    } else if (karma === 5) {
+        log("EL's：数週間後。辛うじて生き延びたELが清掃ドローンに解体されようとしている。", "#ffec3d");
+        html = `<div style="display:flex; flex-direction:column; gap:5px;"><button class="action-btn" onclick="elResult('盾になる')">盾になる</button><button class="action-btn" onclick="elResult('傍観する')">傍観する</button><button class="action-btn" onclick="elResult('協力する')">協力する</button></div>`;
+    } else if (karma === 6) {
+        log("EL's：数週間後。度重なる略奪でELの精神は崩壊。赤い眼光を放ち、街を無差別に襲い始めた。", "#ffd1dc");
+        html = `<div style="display:flex; flex-direction:column; gap:5px;"><button class="action-btn" onclick="elResult('鎮圧する')">鎮圧する</button><button class="action-btn" onclick="elResult('助けを呼ぶ')">助けを呼ぶ</button><button class="action-btn" onclick="elResult('逃げる')">逃げる</button></div>`;
+    }
+    // 第4回以降（自動進行イベント）はボタンが必要ないので、ここで直接処理して終了
+    else if (karma >= 7 && karma <= 13) {
+        processKarmaMid(karma);
+        return; // ボタンを表示しないのでここで抜ける
+    }
+    else if (karma >= 14) {
+        processKarmaEnd(karma);
+        return; // ボタンを表示しないのでここで抜ける
+    }
+
+    area.innerHTML = html;
+}
+
+// 選択後の結果処理（ここですぐにボタンを消去）
+function elResult(choice) {
+    // 1. まずボタンエリアを即座に空にする
+    document.getElementById('encounter-area').innerHTML = "";
+    
+    // 2. 選択に応じたログ表示とカルマ更新
+    if (karma === 0) {
+        if (choice === '起動する') { log("選択：電力が戻る。「……おはよう。あなたが、私のマスター？」", "#00ff41"); karma = 1; }
+        else { log("選択：コアを摘出した。彼女はノイズを吐き、泥の中に沈んだ。 [+50₿]", "#ffec3d"); money += 50; karma = 2; }
+    } else if (karma === 1) {
+        if (choice === '修理する') { log("選択：「…ありがとう。」 パーツを移植すると、彼女の頬に赤みが差した。", "#00ff41"); karma = 3; }
+        else { log("選択：護身用データを転送。彼女の瞳は効率のみを求める冷たい光に変わった。", "#00ff41"); karma = 4; }
+    } else if (karma === 2) {
+        if (choice === '修理する') { log("選択：彼女は無言で受け取った。震える手で自身の傷を塞いでいる。", "#00ff41"); karma = 5; }
+        else { log("選択：センサーを剥ぎ取った。彼女は視覚を失い、闇の中で絶叫した。 [+100₿]", "#ffec3d"); money += 100; karma = 6; }
+    } else if (karma === 3) {
+        if (choice === '共に逃亡') { log("選択：「離さない……！」 貴方は彼女を抱え、封鎖線の闇へ飛び込んだ。", "#00ff41"); karma = 7; }
+        else if (choice === '共に戦闘') { log("選択：「貴方はわたしが守る……！」ELは盾となり、貴方の前で無惨に爆散した。", "#00ff41"); karma = 8; }
+        else { log("選択：ELを軍に引き渡した。彼女の絶望した顔があなたの脳裏に焼き付いて離れない。", "#00ff41"); karma = 9; }
+    } else if (karma === 4) {
+        if (choice === '記憶を消す') { log("選択：彼女の記憶を消去し、人混みへ紛れ込ませた。これで追われることもないだろう。", "#00ff41"); karma = 10; }
+        else if (choice === '見守る') { log("選択：彼女は企業の部隊を壊滅させた。返り血を浴びたELは、無表情に立ち尽くしている。", "#00ff41"); karma = 11; }
+        else { log("選択：貴方は企業に通報した。しかし彼女は既に何処かへと姿を消していた。", "#00ff41"); karma = 12; }
+    } else if (karma === 5) {
+        if (choice === '盾になる') { log("選択：降り注ぐ弾丸を背中で受ける。彼女は初めて、貴方の名を叫んだ。 [-100HP]", "#ff0055"); hp -= 100; karma = 7; }
+        else if (choice === '傍観する') { log("選択：助けを求めた彼女の体を、解体用アームが無慈悲に引き裂いた。", "#00ff41"); karma = 13; }
+        else { log("選択：「ゴキョウリョクニカンシャシマス」清掃ドローンの無機質な声だけが響いた。", "#00ff41"); karma = 9; }
+    } else if (karma === 6) {
+        if (choice === '鎮圧する') { log("選択：暴れる彼女を完全に沈黙させた。彼女は物言わぬ鉄屑へと戻った。 [+300₿]", "#ffec3d"); money += 300; karma = 13; }
+        else if (choice === '助けを呼ぶ') { log("選択：企業の部隊が駆けつけたが、彼女は包囲網を抜け出し逃走した。", "#00ff41"); karma = 12; }
+        else { 
+            log("選択：「全部、貴方のせい」 彼女の機械の指が、貴方の首を握り潰した。", "#ff0055");
+            setTimeout(() => { document.getElementById('dead-reason').innerText = "TERMINATED BY EL"; switchPage('page-dead'); }, 3000);
+        }
+    }
+    
+    // 3. UI更新
+    update();
+}
+function processKarmaMid(k) {
+    if (k === 7) { log("EL's：この世界に救いはない。それでも貴方とELは、灰色の空の下で穏やかな日々を過ごしている。 [+50HP]", "#ffd1dc"); hp += 50; karma = 14; }
+    else if (k === 8) { log("EL's：失意のあなたの前に電子の亡霊となったELが現れた。「これからは……ずっと一緒です…！」 [+30HG]", "#00ffff"); hunger += 30; karma = 15; }
+    else if (k === 9) { log("EL's：数日後、あなたの口座に報酬が振り込まれた。 [+300₿]", "#ffec3d"); money += 300; karma = 16; }
+    else if (k === 10) { log("EL's：その後、彼女と出会うことはなかった。今でも彼女の平和を願わずにはいられない。", "#00ff41"); karma = 16; }
+    else if (k === 11) { log("EL's：口座に入金が確認された。「力を与えてくれた貴方へ」というメッセージを添えて。 [+150₿]", "#ffec3d"); money += 150; karma = 17; }
+    else if (k === 12) { log("EL's：路地裏で何者かに襲撃された！傷を追ったが、かろうじて逃げることができた。 [-30HP]", "#ff0055"); hp -= 30; karma = 18; }
+    else if (k === 13) { log("EL's：ELの怨念がシステムに寄生している。耳鳴りのようなノイズから、逃げることはできない……！ [-10HP]", "#ff0055"); hp -= 10; karma = 19; }
+    update();
+}
+
+// 第5回以降の自動処理
+function processKarmaEnd(k) {
+    if (k === 14) { log("EL's：貴方はELと一緒に幸せな日々を過ごした！ [+30HP]", "#00ffff"); hp += 30; }
+    else if (k === 15) { log("EL's：貴方はELの残響と共に、不思議な安らぎの中にいる。 [+15HG]", "#00ffff"); hunger += 15; }
+    else if (k === 16) { log("EL's: 廃棄場の奥。泥に塗れたELのパーツが落ちている。貴方はそれを大切に拾い上げた。", "#e066ff");const elcard = cardMaster[11];
+    cardBox.push(elcard); 
+cardBox.sort((a, b) => a.id - b.id);
+; karma = 20;  }
+    else if (k === 17) { log("EL's：あなたの口座に入金が確認された。彼女は戦場から報酬を送り続けている。 [+150₿]", "#ffec3d"); money += 150; }
+    else if (k === 18) { log("EL's：あなたは路地裏で何者かに襲撃された！ELが貴方の命を狙い続けている。 [-15HP]", "#ff0055"); hp -= 15; }
+    else if (k === 19) { log("EL's：システムの汚染が進行。ELの呪いが貴方の精神を内側から焼き尽くす。 [-5HP]", "#ff0055"); hp -= 5; } // 薄ピンク
+ else if (k === 20) { /* イベントなし */ } 
+
+    update();
+}
+
 
     function useItem(idx) {
         var item = inventory[idx];
@@ -1677,6 +1801,9 @@ async function executeCardEffect(card) {
             if(isP) pKadobaAtk += 5; else eKadobaAtk += 5;
             kLog.innerHTML += `<div>> 攻撃力が5蓄積された。</div>`;
             break;
+case 11: // エルビーム
+    damage = Math.floor(Math.random() * 201);
+       break;   
     }
 
     // ダメージ適用
