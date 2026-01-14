@@ -796,7 +796,7 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
         {id: 2, name: "電磁ボム", price: 40, type: "bomb", stock: 1, noSell: true},
 {id: 3, name: "高性能マスク", price: 100, type: "mask", stock: 1, noSell: true},
 {id: 4, name: "カードパック", price: 150, type: "card_pack", stock: 1, noSell: true},
-{id: 5, name: "HP増強剤", price: 200, type: "maxhp_item", val: 50, stock: 1, noSell: true},
+{id: 5, name: "HP増強剤", price: 250, type: "maxhp_item", val: 50, stock: 1, noSell: true},
         {id: 6, name: "脱出用ICカード", price: 1000, type: "clear", stock: 1, noSell: true}
     ];
 
@@ -834,7 +834,7 @@ const bountyMaster = [
     { name: "SHADOW_GLITCH", atk: 30, hp: 150, slots: [9, 0, 4, 4, 0, 9], prize: 250 },
     { name: "CHROME_VIPER", atk: 30, hp: 200, slots: [0, 0, 1, 6, 6, 10], prize: 350 },
     { name: "GHOSTWIRE_JAX", atk: 45, hp: 300, slots: [5, 8, 5, 10, 5, 8], prize: 500 },
-    { name: "CORPO_GUARDIAN", atk: 40, hp: 250, slots: [9, 0, 1, 1, 2, 3], prize: 0 },
+    { name: "CORPO_GUARDIAN", atk: 40, hp: 270, slots: [9, 0, 1, 1, 2, 3], prize: 0 },
     { name: "EL", atk: 30, hp: 444, slots: [11, 11, 11, 11, 11, 11], prize: 1000 }
 
 ];
@@ -1024,7 +1024,7 @@ if (hp >= 25 && [2,3,4,5].includes(currentHazard) && Math.random() < 0.08) {
 if (karma === 18 && currentHazard === 6 && hp >= 150) {
     if (Math.random() < 0.1) {
         karma = 20; // 二度手間防止
-        log("遭遇:強力な生体反応を検知。ELが姿を現した！", "#ff0055");
+        log("遭遇:強力な生体反応を検知。ELが姿を現した！", "#ffd1dc");
         setTimeout(() => {
             startKadobaSequence(6); 
         }, 2000);
@@ -1295,7 +1295,7 @@ function elResult(choice) {
         else { log("選択：コアを摘出した。彼女はノイズを吐き、泥の中に沈んだ。 [+50₿]", "#ffec3d"); money += 50; karma = 2; }
     } else if (karma === 1) {
         if (choice === '修理する') { log("選択：「…ありがとう。」 パーツを移植すると、彼女の頬に赤みが差した。", "#00ff41"); karma = 3; }
-        else { log("選択：護身用データを転送。彼女の瞳は効率のみを求める冷たい光に変わった。", "#00ff41"); karma = 4; }
+        else { log("選択：不憫に思った貴方は護身用データを転送した。ELの瞳は効率のみを求める冷たい光に変わった。", "#00ff41"); karma = 4; }
     } else if (karma === 2) {
         if (choice === '修理する') { log("選択：彼女は無言で受け取った。震える手で自身の傷を塞いでいる。", "#00ff41"); karma = 5; }
         else { log("選択：センサーを剥ぎ取った。彼女は視覚を失い、闇の中で絶叫した。 [+100₿]", "#ffec3d"); money += 100; karma = 6; }
