@@ -777,7 +777,7 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
         {name: "サプリ", price: 10, type: "hp", val: [10, 20]},
         {name: "エナドリ", price: 25, type: "hg", val: [20, 30]},
         {name: "点滴薬", price: 40, type: "hp", val: [20, 35]},
-        {name: "乾燥肉", price: 15, type: "hg", val: [10, 20]},
+        {name: "乾燥肉", price: 15, type: "hg", val: [15, 20]},
         // --- 新規追加アイテム ---
         {name: "焦げたチップ", price: 45, type: "none"},
         {name: "割れたメモリ", price: 25, type: "none"},
@@ -792,7 +792,7 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
     // ショップアイテム（売却不可フラグを追加）
     var shopMaster = [
         {id: 0, name: "安物リペア液", price: 30, type: "hp", val: [10, 30], stock: 1, noSell: true},
-        {id: 1, name: "合成ゼリー", price: 30, type: "hg", val: [10, 30], stock: 1, noSell: true},
+        {id: 1, name: "合成ゼリー", price: 30, type: "hg", val: [15, 30], stock: 1, noSell: true},
         {id: 2, name: "電磁ボム", price: 40, type: "bomb", stock: 1, noSell: true},
 {id: 3, name: "高性能マスク", price: 100, type: "mask", stock: 1, noSell: true},
 {id: 4, name: "カードパック", price: 150, type: "card_pack", stock: 1, noSell: true},
@@ -802,12 +802,12 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
 
 // 全11種類のカードマスター
 const cardMaster = [
-{ id: 0, name: "アサルト", desc: "中ダメージを与える", type: "攻撃" },
-{ id: 1, name: "クリティカル", desc: "大ダメージを与える", type: "攻撃" },
-{ id: 2, name: "オーバーキル", desc: "特大ダメージを与える", type: "攻撃" },
-{ id: 3, name: "デーモン契約", desc: "HPを消費し、超ダメージを与える", type: "攻撃" },
+{ id: 0, name: "アサルト", desc: "小ダメージを与える", type: "攻撃" },
+{ id: 1, name: "クリティカル", desc: "中ダメージを与える", type: "攻撃" },
+{ id: 2, name: "オーバーキル", desc: "大ダメージを与える", type: "攻撃" },
+{ id: 3, name: "デーモン契約", desc: "HPを消費し、特大ダメージを与える", type: "攻撃" },
 { id: 4, name: "グリッチ", desc: "ミス数に応じたダメージを与える", type: "攻撃" },
-{ id: 5, name: "シーケンスブロー", desc: "中ダメージを1～3回与える", type: "攻撃" },
+{ id: 5, name: "シーケンスブロー", desc: "小ダメージを1～3回与える", type: "攻撃" },
 { id: 6, name: "回路ショート", desc: "自身のHPが高いほど大ダメージ", type: "攻撃" },
 { id: 7, name: "ナノリペア", desc: "HPを中回復する", type: "バフ" },
 { id: 8, name: "オーバードライブ", desc: "自身のHPを消費して攻撃力大アップ", type: "バフ" },
@@ -834,7 +834,7 @@ const bountyMaster = [
     { name: "SHADOW_GLITCH", atk: 30, hp: 150, slots: [9, 0, 4, 4, 0, 9], prize: 250 },
     { name: "CHROME_VIPER", atk: 30, hp: 200, slots: [0, 0, 1, 6, 6, 10], prize: 350 },
     { name: "GHOSTWIRE_JAX", atk: 45, hp: 300, slots: [5, 8, 5, 10, 5, 8], prize: 500 },
-    { name: "CORPO_GUARDIAN", atk: 40, hp: 270, slots: [9, 0, 1, 1, 2, 3], prize: 0 },
+    { name: "CORPO_GUARDIAN", atk: 40, hp: 275, slots: [9, 0, 1, 1, 2, 3], prize: 0 },
     { name: "EL", atk: 30, hp: 444, slots: [11, 11, 11, 11, 11, 11], prize: 1000 }
 
 ];
@@ -1059,7 +1059,7 @@ if (currentHazard === -1) {
 updateHazard(); // 環境の再計算と表示更新
         document.getElementById('day-val').innerText = days;
         document.getElementById('encounter-area').innerHTML = "";
-let hLoss = Math.floor(Math.random() * (9 - 5 + 1)) + 5; 
+let hLoss = Math.floor(Math.random() * (8 - 5 + 1)) + 5; 
 hunger = Math.max(0, hunger - hLoss);
         if (hunger <= 0) { hp -= 15; log("警告：エネルギー枯渇！", "#ff0055"); }
 
@@ -1291,7 +1291,7 @@ function elResult(choice) {
     
     // 2. 選択に応じたログ表示とカルマ更新
     if (karma === 0) {
-        if (choice === '起動する') { log("選択：電力が戻る。「……おはよう。あなたが、私のマスター？」", "#00ff41"); karma = 1; }
+        if (choice === '起動する') { log("選択：システム起動「……おはよう。あなたが、私のマスター？」", "#00ff41"); karma = 1; }
         else { log("選択：コアを摘出した。彼女はノイズを吐き、泥の中に沈んだ。 [+50₿]", "#ffec3d"); money += 50; karma = 2; }
     } else if (karma === 1) {
         if (choice === '修理する') { log("選択：「…ありがとう。」 パーツを移植すると、彼女の頬に赤みが差した。", "#00ff41"); karma = 3; }
@@ -1301,7 +1301,7 @@ function elResult(choice) {
         else { log("選択：センサーを剥ぎ取った。彼女は視覚を失い、闇の中で絶叫した。 [+100₿]", "#ffec3d"); money += 100; karma = 6; }
     } else if (karma === 3) {
         if (choice === '共に逃亡') { log("選択：「離さない……！」 貴方は彼女を抱え、封鎖線の闇へ飛び込んだ。", "#00ff41"); karma = 7; }
-        else if (choice === '共に戦闘') { log("選択：「貴方はわたしが守る……！」ELは盾となり、貴方の前で無惨に爆散した。", "#00ff41"); karma = 8; }
+        else if (choice === '共に戦闘') { log("選択：「貴方はわたしが守る……！」ELは盾となり、貴方の前で爆散した。", "#00ff41"); karma = 8; }
         else { log("選択：ELを軍に引き渡した。彼女の絶望した顔があなたの脳裏に焼き付いて離れない。", "#00ff41"); karma = 9; }
     } else if (karma === 4) {
         if (choice === '記憶を消す') { log("選択：彼女の記憶を消去し、人混みへ紛れ込ませた。これで追われることもないだろう。", "#00ff41"); karma = 10; }
@@ -1801,19 +1801,19 @@ async function executeCardEffect(card) {
         case 8: // オーバードライブ
             if(isP) {
                 pKadobaHp = Math.floor(pKadobaHp / 2);
-                pKadobaAtk += 15;
+                pKadobaAtk += 20;
             } else {
                 eKadobaHp = Math.floor(eKadobaHp / 2);
-                eKadobaAtk += 15;
+                eKadobaAtk += 20;
             }
-            kLog.innerHTML += `<div style="color:var(--orange)">> リミッター解除！攻撃力+15。</div>`;
+            kLog.innerHTML += `<div style="color:var(--orange)">> リミッター解除！攻撃力が大幅に上昇。</div>`;
             break;
         case 9: // エラー
             kLog.innerHTML += `<div>> 何も起きなかった。</div>`;
             break;
         case 10: // チャージ
-            if(isP) pKadobaAtk += 5; else eKadobaAtk += 5;
-            kLog.innerHTML += `<div>> 攻撃力が5蓄積された。</div>`;
+            if(isP) pKadobaAtk += 7; else eKadobaAtk += 7;
+            kLog.innerHTML += `<div>> 攻撃力が上昇した。</div>`;
             break;
 case 11: // エルビーム
     damage = Math.floor(Math.random() * 201);
