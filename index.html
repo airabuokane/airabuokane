@@ -460,6 +460,19 @@ position: relative;
         .s15 { top: 40%; left: 30%; animation: shoot 11s infinite 1.8s; }
         .s16 { top: 0%;  left: 100%; animation: shoot 13s infinite 10s; }
 
+@keyframes glitch-anim {
+    0% { transform: translate(0, 0); filter: invert(0); opacity: 1; }
+    20% { transform: translate(-1px, 1px); filter: invert(0.2); opacity: 0.9; }
+    40% { transform: translate(1px, -1px); filter: invert(0); opacity: 1; }
+    60% { transform: translate(-1px, 0); filter: invert(0.1); opacity: 0.95; }
+    80% { transform: translate(1px, 1px); filter: invert(0); opacity: 1; }
+    100% { transform: translate(0, 0); filter: invert(0); opacity: 1; }
+}
+
+.glitch-hit { 
+    /* 0.2sから1.2sへ変更。linearをease-in-outにするとより滑らかになります */
+    animation: glitch-anim 1.2s ease-in-out !important; 
+}
   
     </style>
 </head>
@@ -970,6 +983,12 @@ const descriptions = {
     const colors = { "-1":"#00ffff", 0:"#00ffff", 1:"#00ff41", 2:"#ffaa00", 3:"#ffaa00", 4:"#ff5522", 5:"#ff0055", 6:"#ff0000" };
     hDisplay.style.color = colors[currentHazard];
 }
+function triggerGlitch() {
+    document.body.classList.add('glitch-hit');
+    setTimeout(() => {
+        document.body.classList.remove('glitch-hit');
+    }, 200); // ここをしっかり閉じる
+}
 
 function calculateNextHazard() {
     // 100日目までの確率変動計算
@@ -1015,15 +1034,17 @@ return;
 
 // scavenge関数内の既存の遭遇判定の前に挿入
 if (hp >= 25 && [2,3,4,5].includes(currentHazard) && Math.random() < 0.08) {
-    log("不明：歴戦の賞金首と遭遇しました！！", "#e066ff");    
+    log("不明：歴戦の賞金首と遭遇しました！！", "#e066ff");   
+triggerGlitch(); 
         // 遭遇演出のために少し待ってからバトル画面へ（ここ重要）
         setTimeout(() => {
             startKadobaSequence(Math.floor(Math.random() * 5));
-        }, 1500);
+        }, 2000);
 }
 if (karma === 18 && currentHazard === 6 && hp >= 150) {
     if (Math.random() < 0.1) {
         karma = 20; // 二度手間防止
+triggerGlitch();
         log("遭遇:強力な生体反応を検知。ELが姿を現した！", "#ffd1dc");
         setTimeout(() => {
             startKadobaSequence(6); 
@@ -1083,6 +1104,7 @@ hunger = Math.max(0, hunger - hLoss);
                 var loss = Math.floor(money * 0.4) + randomExtra;
                 money -= loss;
                 log("検問：罰金没収。 -" + loss + "₿", "#ff0055");
+triggerGlitch();
                 
                 // 強制徴収で0以下になった場合のみゲームオーバー
 if (money <= 0) {
