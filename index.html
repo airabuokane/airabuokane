@@ -1460,7 +1460,7 @@ log(">> セキュリティ・オーバーライド：最終防衛機構が起動
             if (!item.noSell) {
                 sellBtn = `<button class="item-btn btn-sell" onclick="sellItem(${idx})">売却</button>`;
             } else {
-                sellBtn = `<span style="font-size:9px; color:#555; width:50px; text-align:center;">販売不可</span>`;
+                sellBtn = `<span style="font-size:9px; color:#555; width:50px; text-align:center;">売却不可</span>`;
             }
             
             list.innerHTML += `<div class="item-row"><span>${item.name}<br><small>${item.price}₿</small></span><div class="btn-group">${useBtn}${sellBtn}</div></div>`;
@@ -2129,10 +2129,10 @@ if (money <0) {
     setTimeout(() => {
         if(hp > 0 && money >= 0) {
             document.getElementById('btn-inv').disabled = (currentHazard === 4);
-document.getElementById('btn-scavenge').disabled = false; // 追加
-        document.getElementById('btn-rest').disabled = false;
             switchPage('page-main');
             document.getElementById('encounter-area').innerHTML = ""; 
+if(!isWaiting){document.getElementById('btn-scavenge').disabled = false; // 追加
+        document.getElementById('btn-rest').disabled = false;}
         }
     }, 1500);
 }
