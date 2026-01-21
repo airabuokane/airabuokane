@@ -745,6 +745,7 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
     　　"格納庫がロックされた！配給もねえ、どうやって腹を満たせと？",
     　　"店は便利だ。毎日通っていたいぜ。",
 　　　　"当然だがELは俺の嫁だ。",
+        "なんだか最近環境の変化が激しくないか？終末が近いのかもな。",
 　　　　"環境が悪いと企業の監視の目もゆるくなる。賞金首に出会えるかもな。",
 　　　　"カードとは戦闘データが記録されたチップのことさ。じゃあエラーにはなんの意味が？",
         "この街のネオンは、住民の絶望をエネルギーにして光っているんだ",
@@ -752,7 +753,7 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
         "下層区の配給食、最近はプラスチックみたいな食感になってきたな。",
         "生身の体なんて、今じゃ博物館か高額な実験施設にしかないだろうぜ。",
     　　"ジャックスにだけは関わるな。奴の網からは誰も逃げられない。",
-        "雨。雨。雨。この酸は、俺たちの罪を溶かしてはくれない。",
+        "雨。雨。雨。この酸は俺たちの罪を溶かしてくれない。",
         "『幸福は義務です』――消えかけた看板が、闇の中で虚しく光る。",
         "第4区の酸素濃度低下。配給マスクの価格が昨晩の3倍になった。",
         "路地裏のジャンキーが、存在しない太陽を拝んで笑っている。",
@@ -786,7 +787,7 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
 
            // 探索ドロップアイテム（売却可能）
     var itemMaster = [
-        {name: "錆びた歯車", price: 20, type: "none"}, {name: "光る配線", price: 35, type: "none"},
+        {name: "錆びた歯車", price: 20, type: "none"}, {name: "光る配線", price: 60, type: "none"},
         {name: "汚れた基板", price: 50, type: "none"}, {name: "謎の合金", price: 80, type: "none"},
         {name: "空き缶", price: 5, type: "none"}, {name: "断線した義手", price: 120, type: "none"},
         {name: "古い電池", price: 15, type: "none"}, {name: "AIコア残骸", price: 200, type: "none"},
@@ -846,8 +847,8 @@ let karma = 0;
 // --- 賞金首マスターデータ ---
 const bountyMaster = [
     { name: "CRAZY_JIMMY", atk: 30, hp: 100, slots: [9, 0, 0, 10, 10, 1], prize: 100 },
-    { name: "NEON_REAPER", atk: 30, hp: 100, slots: [9, 9, 4, 0, 7, 2], prize: 150 },
-    { name: "SHADOW_GLITCH", atk: 30, hp: 150, slots: [9, 0, 4, 4, 0, 9], prize: 250 },
+    { name: "NEON_REAPER", atk: 30, hp: 125, slots: [9, 9, 4, 0, 7, 2], prize: 150 },
+    { name: "SHADOW_GLITCH", atk: 30, hp: 175, slots: [9, 0, 4, 4, 0, 9], prize: 250 },
     { name: "CHROME_VIPER", atk: 30, hp: 200, slots: [0, 0, 1, 6, 6, 10], prize: 350 },
     { name: "GHOSTWIRE_JAX", atk: 45, hp: 300, slots: [5, 8, 5, 10, 5, 8], prize: 500 },
     { name: "CORPO_GUARDIAN", atk: 40, hp: 275, slots: [9, 0, 1, 1, 2, 3], prize: 0 },
@@ -1252,7 +1253,7 @@ else if(type === "container") {
             log("発見：放置された重装コンテナだ。", "#ffec3d");
             area.innerHTML = `
                 <div style="display:flex; gap:5px;">
-                    <button class="action-btn" style="flex:2;" onclick="startContainerSlot()">回路をハッキング [SCAVENGE]</button>
+                    <button class="action-btn" style="flex:2;" onclick="startContainerSlot()">回路をハッキング [HACKING]</button>
                     <button class="action-btn" style="flex:1; border-color:var(--blue); color:var(--blue);" onclick="useBombForContainer()">ボム使用</button>
                 </div>`;
   }else if(type === "el") {
@@ -1566,7 +1567,7 @@ function showCardDetail(idx) {
         list.innerHTML = "";
         shopMaster.forEach((item) => {
             let btnAttr = ""; let btnText = "購入"; let btnClass = "item-btn";
-            if (item.stock <= 0) { btnAttr = "disabled"; btnText = "SOLD OUT"; } 
+            if (item.stock <= 0) { btnAttr = "disabled"; btnClass += " no-money";btnText = "SOLD OUT"; } 
             else if (money < item.price) { btnClass += " no-money"; btnText = "不足"; }
             list.innerHTML += `<div class="shop-item"><span>${item.name}<br>${item.price}₿</span><button ${btnAttr} class="${btnClass}" onclick="buyItem(${item.id})">${btnText}</button></div>`;
         });
@@ -1938,7 +1939,14 @@ setTimeout(() => {
 
 // 9行目: 4.5秒後
 setTimeout(() => {
-    kLog.innerHTML += `<div style="color:var(--red);font-size:14px;">>> GOODBYE, SCAVENGER.</div>`;
+    let message = ">> GOODBYE, SCAVENGER."; // 基本の台詞
+    
+    // karmaが14の時だけ台詞を上書き
+    if (karma === 14) {
+        message = ">> GOODBYE, SCAVENGER AND EL"; 
+    }
+
+    kLog.innerHTML += `<div style="color:var(--red);font-size:14px;">${message}</div>`;
     kLog.scrollTop = kLog.scrollHeight;
 }, 4500);
 
