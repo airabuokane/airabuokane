@@ -783,14 +783,15 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
         "空腹で目が回る。リールを回す力さえ、残っているかどうか。",
         "あのビルを買い占めたのは誰だ？ 答えは墓場まで持ってけ。",
         "世界が終わる日は、きっと今日みたいな退屈な雨の日だ。",
+        "終末世界では賞金首でさえも耐えられないだろうな。アンドロイドならあるいは…",
         "誰かに追われている気がする。……ノイズか、それとも視線か。"];
 
            // 探索ドロップアイテム（売却可能）
     var itemMaster = [
         {name: "錆びた歯車", price: 20, type: "none"}, {name: "光る配線", price: 60, type: "none"},
         {name: "汚れた基板", price: 50, type: "none"}, {name: "謎の合金", price: 80, type: "none"},
-        {name: "空き缶", price: 5, type: "none"}, {name: "断線した義手", price: 120, type: "none"},
-        {name: "古い電池", price: 15, type: "none"}, {name: "AIコア残骸", price: 200, type: "none"},
+        {name: "空き缶", price: 5, type: "none"}, {name: "断線した義手", price: 100, type: "none"},
+        {name: "古い電池", price: 15, type: "none"}, {name: "AIコア残骸", price: 150, type: "none"},
         {name: "サプリ", price: 10, type: "hp", val: [10, 20]},
         {name: "エナドリ", price: 25, type: "hg", val: [20, 30]},
         {name: "点滴薬", price: 40, type: "hp", val: [20, 35]},
@@ -801,7 +802,7 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
         {name: "鉄の塊", price: 30, type: "none"},
         {name: "欠けたレンズ", price: 40, type: "none"},
         {name: "シャキザク", price: 30, type: "hg", val: [35, 50]},
-        {name: "新品の電池", price: 100, type: "none"},
+        {name: "新品の電池", price: 90, type: "none"},
         {name: "リペアキット", price: 50, type: "hp", val: [40, 50]}
 
     ];
@@ -1101,7 +1102,7 @@ hunger = Math.max(0, hunger - hLoss);
 
    
         // --- レアイベント (修正版) ---
-        if (Math.random() < 0.02) {
+        if (Math.random() < 0.03) {
             if (Math.random() > 0.5) {
                 // 罰金計算：所持金の40% + 0～300
                 var randomExtra = Math.floor(Math.random() * 301); // 0から300の乱数
@@ -1992,6 +1993,10 @@ function useBomb() {
         document.getElementById('btn-inv').disabled = false;
         document.getElementById('encounter-area').innerHTML = "";
         update();
+if(!isWaiting){document.getElementById('btn-scavenge').disabled = false; // 追加
+        document.getElementById('btn-rest').disabled = false;}
+        
+
     } else {
         log("エラー：電磁ボムを所持していません。", "#ff0055");
     }
