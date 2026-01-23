@@ -782,8 +782,9 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
         "新型ナノウイルス。感染者は速やかに指定の焼却炉へ。 ",
         "空腹で目が回る。リールを回す力さえ、残っているかどうか。",
         "あのビルを買い占めたのは誰だ？ 答えは墓場まで持ってけ。",
+        "６枚までしか使えないんだ、不要なカードは捨てておけ。",
         "世界が終わる日は、きっと今日みたいな退屈な雨の日だ。",
-        "終末世界では賞金首でさえも耐えられないだろうな。アンドロイドならあるいは…",
+        "終末世界は賞金首でさえも耐えられないだろうな。アンドロイドなら…",
         "誰かに追われている気がする。……ノイズか、それとも視線か。"];
 
            // 探索ドロップアイテム（売却可能）
@@ -1281,7 +1282,7 @@ function triggerElEvent() {
         log("EL's：数日後、路地裏で暴行を受けていたELを発見する。助け出したものの、彼女の機体は無残に損壊していた。", "#ffd1dc");
         html = `<div style="display:flex; gap:5px;"><button class="action-btn" style="flex:1;" onclick="elResult('修理する')">修理する</button><button class="action-btn" style="flex:1;" onclick="elResult('戦闘を教育')">戦闘を教育</button></div>`;
     } else if (karma === 2) {
-        log("EL's：数日後、路地裏で半壊したELが這い寄ってきた。剥き出しの配線を火花させ、貴方を睨んでいる。", "#ffd1dc");
+        log("EL's：数日後、路地裏で半壊したELが這い寄ってきた。剥き出しの配線から火花が散り、貴方を睨んでいる。", "#ffd1dc");
         html = `<div style="display:flex; gap:5px;"><button class="action-btn" style="flex:1;" onclick="elResult('修理する')">修理する</button><button class="action-btn" style="flex:1;" onclick="elResult('追撃する')">追撃する</button></div>`;
     }
     // 第3回遭遇 (カルマ3, 4, 5, 6)
@@ -1392,7 +1393,7 @@ cardBox.sort((a, b) => a.id - b.id);
     }
 if (item.type === "mask") {
     if (currentHazard === 6) {
-        log("エラー：この環境下ではマスクは無意味だ。", "#ff0000");
+        log("エラー：この環境下でマスクは無意味だ。", "#ff0000");
         return;
     }
     currentHazard = -1;
@@ -2104,7 +2105,7 @@ function resolveBattle() {
         let getMoney = 0; let msg = "";
 
         if (res === "JACKPOT") {
-            getMoney = Math.floor(Math.random() * 301) + 150;
+            getMoney = Math.floor(Math.random() * 251) + 150;
             money += getMoney;
             msg = "JACKPOT！高額チップを抽出した。 [+" + getMoney + "₿]";
         } else if (res === "SUCCESS") {
