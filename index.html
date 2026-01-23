@@ -850,11 +850,11 @@ let karma = 0;
 const bountyMaster = [
     { name: "CRAZY_JIMMY", atk: 30, hp: 100, slots: [9, 0, 0, 10, 10, 1], prize: 100 },
     { name: "NEON_REAPER", atk: 30, hp: 125, slots: [9, 9, 4, 0, 7, 2], prize: 150 },
-    { name: "SHADOW_GLITCH", atk: 30, hp: 175, slots: [9, 0, 4, 4, 0, 9], prize: 250 },
-    { name: "CHROME_VIPER", atk: 30, hp: 200, slots: [0, 0, 1, 6, 6, 10], prize: 350 },
-    { name: "GHOSTWIRE_JAX", atk: 45, hp: 300, slots: [5, 8, 5, 10, 5, 8], prize: 500 },
+    { name: "SHADOW_GLITCH", atk: 30, hp: 175, slots: [9, 0, 4, 4, 0, 9], prize: 200 },
+    { name: "CHROME_VIPER", atk: 30, hp: 200, slots: [0, 0, 1, 6, 6, 10], prize: 250 },
+    { name: "GHOSTWIRE_JAX", atk: 45, hp: 300, slots: [5, 8, 5, 10, 5, 8], prize: 333 },
     { name: "CORPO_GUARDIAN", atk: 40, hp: 275, slots: [9, 0, 1, 1, 2, 3], prize: 0 },
-    { name: "EL", atk: 30, hp: 444, slots: [11, 11, 11, 11, 11, 11], prize: 1000 }
+    { name: "EL", atk: 30, hp: 444, slots: [11, 11, 11, 11, 11, 11], prize: 5000 }
 
 ];
 
@@ -1047,8 +1047,8 @@ triggerGlitch();
             startKadobaSequence(Math.floor(Math.random() * 5));
         }, 2000);
 }
-if (karma === 18 && currentHazard === 6 && hp >= 150) {
-    if (Math.random() < 0.1) {
+if (karma === 18 && currentHazard === 6 && hp >= 120) {
+    if (Math.random() < 0.15) {
         karma = 20; // 二度手間防止
 triggerGlitch();
         log("遭遇:強力な生体反応を検知。ELが姿を現した！", "#ffd1dc");
