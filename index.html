@@ -515,7 +515,7 @@ position: relative;
             </div>
         </div>
         <div class="stat-box" style="margin-bottom: 5px; text-align: center; font-size: 1.4em; color: var(--gold);">
-            MONEY: <span id="money-val">0</span> ₿
+            MONEY: <span id="money-val">50</span> ₿
         </div>
         <div id="display-log"></div>
         
@@ -560,6 +560,8 @@ position: relative;
 <div id="page-shop" class="page">
     <div id="os-interface" style="border-color: var(--blue);">
         <h3 style="margin:0; color:var(--blue); border-bottom: 1px solid var(--blue);">TECH-SHOP</h3>
+        
+        <div id="shop-msg" style="font-size:11px; color:var(--blue); height:20px; margin:5px 0;">最高峰のテクノロジー、またはジャンク</div>
         <div class="inventory-list" id="shop-list"></div>
         <button class="action-btn full-width" onclick="switchPage('page-main')">店を出る [LEAVE]</button>
     </div>
@@ -681,7 +683,7 @@ position: relative;
 </div>
 
 <script>
-    var hp = 100, hpMax = 100, hunger = 100, hgMax = 100, money = 0, isWaiting = false, inventory = [];
+    var hp = 100, hpMax = 100, hunger = 100, hgMax = 100, money = 50, isWaiting = false, inventory = [];
 var days = 1;
 var cardBox = [];
     var isEncountering = false; 
@@ -1730,16 +1732,71 @@ function showCardDetail(idx) {
         } 
     }
 
-    function renderShop() {
-        var list = document.getElementById('shop-list');
-        list.innerHTML = "";
-        shopMaster.forEach((item) => {
-            let btnAttr = ""; let btnText = "購入"; let btnClass = "item-btn";
-            if (item.stock <= 0) { btnAttr = "disabled"; btnClass += " no-money";btnText = "SOLD OUT"; } 
-            else if (money < item.price) { btnClass += " no-money"; btnText = "不足"; }
-            list.innerHTML += `<div class="shop-item"><span>${item.name}<br>${item.price}₿</span><button ${btnAttr} class="${btnClass}" onclick="buyItem(${item.id})">${btnText}</button></div>`;
-        });
+function showShopDetail(id) {
+    const item = shopMaster.find(i => i.id === id);
+    const msgEl = document.getElementById('shop-msg');
+    
+    let desc = "";
+    // アイテムのタイプに応じて説明文を動的に生成
+    switch(item.type) {
+        case "hp":
+            desc = `義体修復。HPが少し回復する。`;
+            break;
+        case "hg":
+            desc = `エネルギー補充。HGが少し回復する。`;
+            break;
+        case "bomb":
+            desc = `戦闘遭遇時やコンテナ発見時に使用可能。`;
+            break;
+        case "mask":
+            desc = `過酷な環境から身を守る。10日間環境変化無効。`;
+            break;
+        case "unlock_sell":
+            desc = `強制的に電脳闇市へアクセスする。`;
+            break;
+        case "bribe":
+            desc = `奪取や悪徳警官の検問などの強制徴収を一度だけ防ぐ。`;
+            break;
+        case "card_pack":
+            desc = `カードをランダムに1枚抽出して取得する。`;
+            break;
+        case "maxhp_item":
+            desc = `生体フレームを強化し、最大HPを恒久的に上昇させる。`;
+            break;
+        case "clear":
+            desc = `？？？`;
+            break;
+        default:
+            desc = "詳細データ不明の未知のテクノロジー。";
     }
+
+    msgEl.innerText = item.name + ": " + desc;
+    msgEl.style.color = "var(--gold)"; // 説明文をゴールドで強調
+}
+
+function renderShop() {
+    // ショップに入った時にメッセージをリセット
+    document.getElementById('shop-msg').innerText = "最高峰のテクノロジー、またはジャンク";
+    document.getElementById('shop-msg').style.color = "var(--blue)";
+
+    var list = document.getElementById('shop-list');
+    list.innerHTML = "";
+    shopMaster.forEach((item) => {
+        let btnAttr = ""; let btnText = "購入"; let btnClass = "item-btn";
+        if (item.stock <= 0) { btnAttr = "disabled"; btnClass += " no-money"; btnText = "SOLD OUT"; } 
+        else if (money < item.price) { btnClass += " no-money"; btnText = "不足"; }
+        
+        // カードストレージと同様のクリック可能な詳細構造をショップアイテムに適用
+        list.innerHTML += `
+        <div class="shop-item" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="cursor:pointer; flex-grow: 1;" onclick="showShopDetail(${item.id})">
+                <span style="display:block;">${item.name}</span>
+                <small style="font-size:9px; color:var(--blue); text-shadow: 0 0 2px var(--blue);">[詳細] <span style="color:var(--gold);">${item.price}₿</span></small>
+            </div>
+            <button ${btnAttr} class="${btnClass}" onclick="buyItem(${item.id})">${btnText}</button>
+        </div>`;
+    });
+}   
 
 function buyItem(id) {
         var item = shopMaster.find(i => i.id === id);
