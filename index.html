@@ -1332,7 +1332,7 @@ cardBox.sort((a, b) => a.id - b.id);
             area.innerHTML = '<button class="action-btn full-width" onclick="specialSell(\''+target.name+'\','+target.price*2+')">特別売却：'+target.name+'</button>'; 
         }
 else if(type === "cyberware") {
-    area.innerHTML = '<button class="action-btn full-width cyberware-btn" style="color:#3399ff;border-color:#3399ff;" onclick="installCyberware()">サイバーウェア装着 [200₿]</button>';
+    area.innerHTML = '<button class="action-btn full-width cyberware-btn" style="color:#3399ff;border-color:#3399ff;" onclick="installCyberware()">サイバーウェア装着 [100₿]</button>';
 }
 else if(type === "container") {
             log("発見：放置された重装コンテナだ。", "#ffec3d");
@@ -1605,7 +1605,7 @@ let reinstall = (psw !== 0);
         return;
     }
 
-    money -= 200;
+    money -= 100;
 
     psw = Math.floor(Math.random() * 8) + 1;
     msw = Math.floor(Math.random() * 5) + 1;
@@ -1654,16 +1654,16 @@ let reinstall = (psw !== 0);
         msText = "[-10HP]";
     }
     else if (msw === 2) {
-        hp -= 20;
-        msText = "[-20HP]";
+        hp -= 25;
+        msText = "[-25HP]";
     }
     else if (msw === 3) {
         hp -= 30;
         msText = "[-30HP]";
     }
     else if (msw === 4) {
-        hp -= 40;
-        msText = "[-40HP]";
+        hp -= 50;
+        msText = "[-50HP]";
     }
     else if (msw === 5) {
         hp -= 77;
