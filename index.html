@@ -191,6 +191,27 @@ touch-action: manipulation;
             text-shadow: 0 0 5px #ff0000;
             cursor: not-allowed;
         }
+.cyberware-btn {
+    color: #33ccff !important;
+    border-color: #33ccff !important;
+
+    text-shadow:
+        0 0 6px rgba(51, 204, 255, 0.8),
+        0 0 12px rgba(51, 204, 255, 0.6);
+
+    box-shadow:
+        0 0 10px rgba(51, 204, 255, 0.8),
+        0 0 20px rgba(51, 204, 255, 0.6),
+        0 0 35px rgba(51, 204, 255, 0.4);}
+
+.cyberware-btn:hover:not(:disabled) {
+    background: rgba(51, 204, 255, 0.12);
+
+    box-shadow:
+        0 0 15px rgba(51, 204, 255, 0.7),
+        0 0 30px rgba(51, 204, 255, 0.4);
+}
+
         
 .start-poem {
     font-size: 12px;
@@ -694,25 +715,25 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
 
     var containerCommands = ["JACKPOT", "MISS", "SUCCESS", "MISS", "SUCCESS", "CRITICAL"];    var streetMessages = [
         "ICカードさえ手に入れば、隔離セクターのゲートを上書きできるはずだ。",
-        "検問の奴ら、資産の4割近くを平気で持っていきやがる。",
+        "企業の奴ら、検問で資産の4割近くを持っていきやがる。",
         "戦闘で奪われるのはデータの1割程度だが命取りになるぞ。",
         "どうしても戦いたくないなら、電磁ボムを積み込んでおくんだな。",
         "腹が減りすぎると生命維持装置に負荷がかかる。何か胃に入れておけ。",
         "150日後に終焉が訪れるらしいから準備してるんだ。200日までは生きられる量があるぜ",
         "【通知】第4区画の酸素濃度低下。呼吸器のフィルタ交換を推奨します。",
-        "あいつ、義体のローンが払えなくて昨日回収されたらしいぜ……。",
+        "あいつ義体のローンが払えなくて昨日回収されたらしいぜ……。",
         "意識を永遠のクラウドへ。タナトス・テクノロジー社が導きます。",
         "『肉体は牢獄、電子こそ真理』 誰かが壁にスプレーで書き残している。",
         "【警告】未登録ドローンは即座に防衛システムの掃討対象となります。",
         "今日の合成肉、妙に金属の味がする。ロット番号が古いのか？",
-        "最新OS v9.0 予約受付中。脳に直接、最高の快楽をインストール。",
+        "最新OS v9.0 予約受付中。脳に直接最高の快楽をインストール。",
         "スラム街全域で深刻なシステム・ラグが発生。原因は依然として不明。",
         "企業への奉仕は、あなた自身の幸福です。 ―― 統合政府広報局",
         "ハッカー対策に『アイス・ウォール3000』。記憶を暗号化して保護。",
-        "この酸性雨の向こう側に、本当に青い空なんてあるのかよ。",
+        "この酸性雨の向こう側に青い空なんてあるのかよ。",
         "【予報】腐食性降雨の恐れ。パーツのコーティングを確認してください。",
-        "被検体急募。高額報酬、非人道的実験への同意。生存保証なし。",
-        "軌道エレベーターの光が、厚い雲の向こうで鈍く明滅している。",
+        "被検体急募。高額報酬、非人道的実験への同意、生存保証なし。",
+        "軌道エレベーターの光が厚い雲の向こうで鈍く明滅している。",
         "その渇き、電解質飲料『ボルト・アップ』で焼き切れ。",
         "チップの接続部が熱い。また安物の再生コネクタを掴まされたか。",
         "賞金首との戦いでは体力が重要だ。確か増強剤があったはず。",
@@ -720,12 +741,12 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
         "カードをいっぱい持っていようが、実践で使えるのは６枚までだ",
         "ELって名前のアンドロイドを買ったが、不良品だったようだ。",
         "あと1000₿。それだけあれば、このゴミ溜めからおさらばできる。",
-        "企業の株価が過去最高値を更新。下層区の配給カットが決定。",
-        "古い義体、高価買い取り。 ―― 2番街の屑鉄屋",
+        "企業の株価が過去最高値を更新。また下層区の配給カットが決定。",
+        "古い義体高価買い取り。 ―― 2番街の屑鉄屋",
         "環境悪化が加速している。早く脱出しないとな。",
 　　　　"金を持ちすぎるのも良くはない。企業に持っていかれるぞ。",
-        "今日は空気が美味い。このクソな街にも、稀に幸運は降る。",
-        "地獄の暑さだ。オーバーヒート前に、日陰で回路を休めないと。",
+        "今日は空気が美味い。このクソな街にも稀に幸運は降る。",
+        "地獄の暑さだ。オーバーヒート前に日陰で回路を休めないと。",
         "衛星の寿命はあと5ヶ月。その先にあるのは、虚無か希望か。",
         "預言者が叫んでいる。終焉（アポカリプス）は近い、とな。",
         "動かずに待つのも生存戦略だ。環境が変わるのを休憩して待て。",
@@ -757,7 +778,7 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
     　　"ジャックスにだけは関わるな。奴の網からは誰も逃げられない。",
         "雨。雨。雨。この酸は俺たちの罪を溶かしてくれない。",
         "『幸福は義務です』――消えかけた看板が、闇の中で虚しく光る。",
-        "第4区の酸素濃度低下。配給マスクの価格が昨晩の3倍になった。",
+        "第4区の大気汚染悪化。配給マスクの価格が昨晩の3倍になった。",
         "路地裏のジャンキーが、存在しない太陽を拝んで笑っている。",
         "検問の連中、最近は胃袋の中までスキャンしやがる。最悪だ。",
         "企業のドローンが墜落したらしい。ジャンク漁りの絶好の機会だ。",
@@ -772,13 +793,13 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
         "電力制限。今夜もこの区画は、企業の都合で闇に沈む。",
         "『健康を維持せよ。お前の肉体は企業の所有物である。』",
         "壊れたアンドロイドが、ゴミ捨て場で古い子守唄を歌っている。",
-        "JAMMINGがひどい。バッグのロックが、どうしても外れない。",
+        "JAMMINGがひどい。バッグのロックがどうしても外れない。",
         "壁に書き殴った文字「出口はこの下にある」そこにはゴミ箱があった",
         "未認可のサイバーウェアを積んだ男が、角の店で爆発した。",
         "合成肉の味にも慣れた。もはや本物の「肉」が何かも知らん。",
         "空に浮かぶ巨大モニターが、株価と一緒に誰かの訃報を流す。",
         "リペアキットの在庫が切れた。このまま錆びて死ぬのを待つか。",
-        "酸性雨。屋根のない場所で寝る奴は、自殺志願者だ。",
+        "酸性雨。屋根のない場所で寝る奴は自殺志願者だ。",
         "銀行が凍結された。昨日まで持っていたビットがただの数字に。",
         "「助けて」と書かれたホログラムが、無人の交差点で揺れている。",
         "新型ナノウイルス。感染者は速やかに指定の焼却炉へ。 ",
@@ -786,6 +807,9 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
         "あのビルを買い占めたのは誰だ？ 答えは墓場まで持ってけ。",
         "６枚までしか使えないんだ、不要なカードは捨てておけ。",
         "世界が終わる日は、きっと今日みたいな退屈な雨の日だ。",
+        "手っ取り早く戦闘力を上げたいならサイバーウェアをインストールしな。",
+        "サイバーウェアも万能じゃない。大きな損傷には耐えられないのさ。",
+        "アイテムの売却は定期的に訪れる闇市だけで可能さ。",
         "終末世界は賞金首でさえも耐えられないだろうな。アンドロイドなら…",
         "誰かに追われている気がする。……ノイズか、それとも視線か。"];
 
@@ -1151,7 +1175,7 @@ triggerGlitch();
             var randomExtra = Math.floor(Math.random() * 301); 
             var loss = Math.floor(money * 0.4) + randomExtra;
             money -= loss;
-            log("検問：悪徳警官と遭遇。資産の一部が没収されました。 -" + loss + "₿", "#ff0055");
+            log("検問：悪徳警官と遭遇。資産の一部が没収されました。 [-" + loss + "₿]", "#ff0055");
             triggerGlitch();
             
             if (money <= 0) {
@@ -1308,7 +1332,7 @@ cardBox.sort((a, b) => a.id - b.id);
             area.innerHTML = '<button class="action-btn full-width" onclick="specialSell(\''+target.name+'\','+target.price*2+')">特別売却：'+target.name+'</button>'; 
         }
 else if(type === "cyberware") {
-    area.innerHTML = '<button class="action-btn full-width" style="color:#3399ff;border-color:#3399ff;" onclick="installCyberware()">サイバーウェア [200₿]</button>';
+    area.innerHTML = '<button class="action-btn full-width cyberware-btn" style="color:#3399ff;border-color:#3399ff;" onclick="installCyberware()">サイバーウェア装着 [200₿]</button>';
 }
 else if(type === "container") {
             log("発見：放置された重装コンテナだ。", "#ffec3d");
@@ -1387,7 +1411,7 @@ function elResult(choice) {
         if (choice === '修理する') { log("選択：彼女は無言で受け取った。震える手で自身の傷を塞いでいる。", "#00ff41"); karma = 5; }
         else { log("選択：センサーを剥ぎ取った。彼女は視覚を失い、闇の中で絶叫した。 [+100₿]", "#ffec3d"); money += 100; karma = 6; }
     } else if (karma === 3) {
-        if (choice === '共に逃亡') { log("選択：「離さない……！」 貴方は彼女を抱え、封鎖線の闇へ飛び込んだ。", "#00ff41"); karma = 7; }
+        if (choice === '共に逃亡') { log("選択：「君を守る……！」 貴方は彼女を抱え、封鎖線の闇へ飛び込んだ。", "#00ff41"); karma = 7; }
         else if (choice === '共に戦闘') { log("選択：「貴方はわたしが守る……！」ELは盾となり、貴方の前で爆散した。", "#00ff41"); karma = 8; }
         else { log("選択：ELを軍に引き渡した。彼女の絶望した顔があなたの脳裏に焼き付いて離れない。", "#00ff41"); karma = 9; }
     } else if (karma === 4) {
@@ -1431,7 +1455,7 @@ cardBox.sort((a, b) => a.id - b.id);
 ; karma = 20;  }
     else if (k === 17) { log("EL's：彼女は戦場から報酬を送り続けている。 [+100₿]", "#ffec3d"); money += 100; }
     else if (k === 18) { log("EL's：あなたは路地裏で何者かに襲撃された！ELが貴方の命を狙い続けている。 [-15HP]", "#ff0055"); hp -= 15; }
-    else if (k === 19) { log("EL's：システムの汚染が進行。ELの呪いが貴方の精神を内側から焼き尽くす。 [-5HP]", "#ff0055"); hp -= 5; } // 薄ピンク
+    else if (k === 19) { log("EL's：システムの汚染が進行。ELの呪いが貴方の精神を内側から焼き尽くす。 [-10HP]", "#ff0055"); hp -= 10; } // 薄ピンク
  else if (k === 20) { /* イベントなし */ } 
 
     update();
@@ -1475,8 +1499,8 @@ if (item.type === "mask") {
     }
     currentHazard = -1;
     hazardName = "FILTER";
-    filterCount = 10;
-    log("高性能マスクを装着。少しの間、環境の影響を受けない。", "#00ffff");
+    filterCount = 15;
+    log("高性能マスクを装着。少しの間環境の影響を受けない。", "#00ffff");
     inventory.splice(idx, 1);
     switchPage('page-main');
     updateHazard();
@@ -1591,15 +1615,15 @@ let reinstall = (psw !== 0);
 
     // 強化効果
     if (psw === 1) {
-        psATK = 3;
+        psATK = 4;
         psText = "[攻撃力増加小]";
     }
     else if (psw === 2) {
-        psATK = 7;
+        psATK = 8;
         psText = "[攻撃力増加中！]";
     }
     else if (psw === 3){
-        psATK = 12;
+        psATK = 13;
         psText = "[攻撃力増加大！！]";
     }
     else if (psw === 4){
@@ -1611,15 +1635,15 @@ let reinstall = (psw !== 0);
         psText = "[休憩時 +5₿]";
     }
     else if (psw === 6) {
-        psATK = 3;
+        psATK = 4;
         psText = "[攻撃力増加小]";
     }	
     else if (psw === 7) {
-        psATK = 3;
+        psATK = 4;
         psText = "[攻撃力増加小]";
     }
     else if (psw === 8) {
-        psATK = 7;
+        psATK = 8;
         psText = "[攻撃力増加中！]";
     }
 
@@ -1675,6 +1699,10 @@ function renderCardBox() {
         list.innerHTML = "<div style='padding:20px; color:#555;'>NO DATA</div>";
         return;
     }
+const msgEl = document.getElementById('card-msg');
+msgEl.innerText = "戦闘時ランダムに6枚選出されます。";
+        msgEl.style.color = "var(--green)";
+
 cardBox.sort((a, b) => a.id - b.id);
 
     cardBox.forEach((card, idx) => {
@@ -1704,13 +1732,14 @@ function sellCard(idx) {
     const cardRank = cardBox[idx].rank;
     money += 50; 
     cardBox.splice(idx, 1); // 配列から削除
-    
+
+renderCardBox(); // リストを再描画    
     // --- ここでメッセージを更新 ---
     msgEl.innerText = `>> ${cardRank}${cardName} を売却しました (+50₿)`;
     msgEl.style.color = "var(--gold)"; // 成功時はゴールドで強調
     
     log("カード売却： " + cardRank + cardName + " +50₿", "#e066ff");
-    renderCardBox(); // リストを再描画
+    
     update();        // 所持金を更新
 }
 
@@ -1749,7 +1778,7 @@ function showShopDetail(id) {
             desc = `戦闘遭遇時やコンテナ発見時に使用可能。`;
             break;
         case "mask":
-            desc = `過酷な環境から身を守る。10日間環境変化無効。`;
+            desc = `15日間環境効果・変化無効。`;
             break;
         case "unlock_sell":
             desc = `強制的に電脳闇市へアクセスする。`;
@@ -1761,7 +1790,7 @@ function showShopDetail(id) {
             desc = `カードをランダムに1枚抽出して取得する。`;
             break;
         case "maxhp_item":
-            desc = `生体フレームを強化し、最大HPを恒久的に上昇させる。`;
+            desc = `生体フレーム強化。最大HPを恒久的上昇。`;
             break;
         case "clear":
             desc = `？？？`;
@@ -2355,7 +2384,7 @@ function resolveBattle() {
         let res = battleCommands[battleIdx];
         let msg = ""; let logColor = "#ff0055";
 
-        if(res === "COUNTER") { msg = "反撃成功！敵を撃退。"; logColor = "#00ff41"; }
+        if(res === "COUNTER") { msg = "反撃成功！敵を撃退。"; logColor = "#00ffff"; }
         else if(res === "BLOCK") { hp -= 5; msg = "防御成功。軽微な損傷。 [-5HP]"; logColor = "#00ffff"; }
         else if(res === "CRITICAL") { 
             var bribeIdx = inventory.findIndex(i => i.type === "bribe");
