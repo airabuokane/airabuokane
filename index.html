@@ -582,7 +582,7 @@ position: relative;
             </div>
         </div>
         <div class="stat-box" style="margin-bottom: 5px; text-align: center; font-size: 1.4em; color: var(--gold);">
-            MONEY: <span id="money-val">50</span> ₿
+            MONEY: <span id="money-val">0</span> ₿
         </div>
       
         <div id="display-log">
@@ -611,6 +611,138 @@ position: relative;
         <div id="street-feed">>> 信号待機中...</div>
         <div id="encounter-area"></div>
     </div>
+</div>
+
+
+<div id="page-manual" class="page" style="overflow-y:auto; height:100vh; max-height:100vh; box-sizing:border-box; background:#050505; color:#00ff41; font-family:'Share Tech Mono','Courier New',monospace; font-size:14px; line-height:1.7;">
+  <style>
+    .man-hero { position:relative; overflow:hidden; padding:40px 18px 32px; border-bottom:2px solid #00ff41; background:rgba(0,12,0,0.96); text-align:center; }
+    .man-hero-grid { position:absolute; inset:0; background-image:linear-gradient(#003300 1px,transparent 1px),linear-gradient(90deg,#003300 1px,transparent 1px); background-size:40px 40px; opacity:.35; }
+    .man-hero-inner { position:relative; z-index:1; }
+    .man-title { font-size:clamp(1.8rem,8vw,3.5rem); letter-spacing:.22em; text-shadow:0 0 24px #00ff41; line-height:1; }
+    .man-ver { font-size:.65rem; color:#00ffff; letter-spacing:.4em; margin-top:12px; opacity:.75; }
+    .man-poem { margin-top:18px; font-size:.72rem; color:rgba(0,255,65,.5); letter-spacing:.1em; line-height:2.2; font-style:italic; }
+    .man-badge { display:inline-block; border:1px solid #ffec3d; color:#ffec3d; font-size:.6rem; letter-spacing:.25em; padding:4px 14px; margin-top:16px; }
+    .man-wrap { max-width:820px; margin:0 auto; padding:32px 14px 60px; display:flex; flex-direction:column; gap:44px; }
+    .man-eyebrow { font-size:.58rem; letter-spacing:.45em; opacity:.65; margin-bottom:5px; }
+    .man-sec-title { font-size:1rem; letter-spacing:.14em; padding-bottom:9px; margin-bottom:16px; border-bottom-width:1px; border-bottom-style:solid; }
+    .man-body { font-size:.8rem; color:rgba(0,255,65,.82); line-height:2.1; }
+    .man-body+.man-body { margin-top:12px; }
+    .man-stat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:8px; }
+    .man-stat-cell { border:1px solid #003300; background:rgba(0,255,65,.02); padding:13px 14px; }
+    .man-stat-wide { border:1px solid #003300; background:rgba(0,255,65,.02); padding:13px 14px; margin-top:8px; }
+    .man-stat-label { font-size:.6rem; letter-spacing:.2em; color:#00ffff; margin-bottom:5px; }
+    .man-stat-desc { font-size:.77rem; line-height:1.8; }
+    .man-btn-list { display:flex; flex-direction:column; gap:7px; }
+    .man-btn-row { display:flex; align-items:flex-start; gap:12px; border:1px solid #003300; padding:12px 13px; background:rgba(0,255,65,.015); }
+    .man-tag { flex-shrink:0; font-size:.6rem; border:1px solid currentColor; padding:2px 9px; letter-spacing:.08em; line-height:1.7; margin-top:1px; }
+    .man-btn-desc { font-size:.78rem; line-height:1.9; color:rgba(0,255,65,.82); }
+    .man-rest-list { display:flex; flex-direction:column; gap:7px; }
+    .man-rest-item { display:flex; align-items:flex-start; gap:10px; padding:10px 13px; border:1px solid #003300; font-size:.78rem; line-height:1.85; color:rgba(0,255,65,.82); }
+    .man-rest-dot { flex-shrink:0; color:#00ffff; font-size:.65rem; margin-top:3px; }
+    .man-hint { border:1px solid #00ffff; background:rgba(0,255,255,.025); color:rgba(100,230,255,.85); padding:12px 15px; margin-top:14px; font-size:.77rem; line-height:1.9; }
+    .man-hint-label { font-size:.58rem; letter-spacing:.3em; color:#00ffff; margin-bottom:5px; }
+    .man-spoiler { border:1px solid #cc88ff; background:rgba(180,100,255,.03); color:rgba(200,160,255,.85); padding:12px 15px; margin-top:14px; font-size:.77rem; line-height:1.9; }
+    .man-spoiler-label { font-size:.58rem; letter-spacing:.3em; color:#cc88ff; margin-bottom:5px; }
+    .man-warn { border:1px solid #ffaa00; background:rgba(255,170,0,.03); color:rgba(255,200,100,.85); padding:12px 15px; margin-top:14px; font-size:.77rem; line-height:1.9; }
+    .man-warn-label { font-size:.58rem; letter-spacing:.3em; color:#ffaa00; margin-bottom:5px; }
+    .man-closing { border:1px solid rgba(255,209,220,.25); background:rgba(255,209,220,.02); padding:24px 18px; text-align:center; position:relative; overflow:hidden; }
+    .man-closing-label { font-size:.58rem; letter-spacing:.4em; color:#ffd1dc; opacity:.65; margin-bottom:16px; }
+    .man-closing-text { font-size:.82rem; color:rgba(255,209,220,.75); line-height:2.4; letter-spacing:.05em; font-style:italic; }
+    .man-closing-sig { margin-top:20px; font-size:.6rem; color:rgba(255,209,220,.3); letter-spacing:.3em; }
+    .man-footer { border-top:1px solid #003300; padding:16px 24px; text-align:center; font-size:.6rem; color:#003300; letter-spacing:.2em; }
+  </style>
+  <header class="man-hero">
+    <div class="man-hero-grid"></div>
+    <div class="man-hero-inner">
+      <div class="man-title">CITIZEN<br>SCAVENGER</div>
+      <div class="man-ver">SYSTEM v3.0 // SURVIVAL SIMULATION</div>
+      <div class="man-poem">見上げる空は 濁った膜に 瞬きひとつ 届かぬ廃星<br>毒に沈んだ この地の先に<br>澄んだ銀河は 戻るのだろうか</div>
+      <div class="man-badge">OPERATION MANUAL</div>
+    </div>
+  </header>
+  <div class="man-wrap">
+    <section>
+      <div class="man-eyebrow" style="color:#00ff41">// 00 — OVERVIEW</div>
+      <div class="man-sec-title" style="border-color:#00ff41;color:#00ff41;text-shadow:0 0 8px rgba(0,255,65,.4)">このゲームは何？</div>
+      <p class="man-body">企業に支配された廃棄衛星の上で、あなたは「スカベンジャー（廃品回収人）」として生き延びるサバイバルゲームです。</p>
+      <p class="man-body">毎日街を探索してアイテムを集め、資金を稼ぎながら、この衛星からの脱出方法を探しましょう。操作はシンプルで、ボタンをタップするだけです。</p>
+    </section>
+    <section>
+      <div class="man-eyebrow" style="color:#00ffff">// 01 — STATUS</div>
+      <div class="man-sec-title" style="border-color:#00ffff;color:#00ffff;text-shadow:0 0 8px rgba(0,255,255,.3)">画面の見かた</div>
+      <div class="man-stat-grid">
+        <div class="man-stat-cell"><div class="man-stat-label">HP</div><div class="man-stat-desc">機体の耐久値。0になると即ゲームオーバー。アイテムで回復できる。</div></div>
+        <div class="man-stat-cell"><div class="man-stat-label">HG（空腹）</div><div class="man-stat-desc">エネルギー残量。探索のたびに少し減る。0になるとHPが削れ続ける。</div></div>
+        <div class="man-stat-cell"><div class="man-stat-label">MONEY（₿）</div><div class="man-stat-desc">所持資金。0以下になると即ゲームオーバー。検問や戦闘で奪われることもある。</div></div>
+        <div class="man-stat-cell"><div class="man-stat-label">DAY</div><div class="man-stat-desc">経過日数。探索・休憩のたびに1日進む。</div></div>
+      </div>
+      <div class="man-stat-wide"><div class="man-stat-label">HAZARD（環境）</div><div class="man-stat-desc">画面上部に表示される現在の環境状態。探索のたびに環境に応じた影響を受ける。</div></div>
+    </section>
+    <section>
+      <div class="man-eyebrow" style="color:#ffec3d">// 02 — CONTROLS</div>
+      <div class="man-sec-title" style="border-color:#ffec3d;color:#ffec3d;text-shadow:0 0 8px rgba(255,236,61,.3)">ボタンの説明</div>
+      <div class="man-btn-list">
+        <div class="man-btn-row"><div class="man-tag" style="color:#00ff41">探索 [SCAVENGE]</div><div class="man-btn-desc">メインアクション。1日が進み、毎回何かしらの出来事が発生します。<strong style="color:#ffec3d">基本はこれを繰り返す。</strong></div></div>
+        <div class="man-btn-row"><div class="man-tag" style="color:#00ffff">休憩</div><div class="man-btn-desc">その日は行動せず休む。詳細は「休憩について」を参照。</div></div>
+        <div class="man-btn-row"><div class="man-tag" style="color:#00ff41">所持品 [INV]</div><div class="man-btn-desc">拾ったアイテムの一覧。「使う」で効果を発動、「売る」で換金できます。売却は電脳闇市へのアクセス中のみ可能です。</div></div>
+        <div class="man-btn-row"><div class="man-tag" style="color:#cc88ff">カード [BOX]</div><div class="man-btn-desc">集めた戦闘カードの一覧。賞金首との特殊バトルで使います。最低6枚が必要です。</div></div>
+      </div>
+    </section>
+    <section>
+      <div class="man-eyebrow" style="color:#00ff41">// 03 — EXPLORATION</div>
+      <div class="man-sec-title" style="border-color:#00ff41;color:#00ff41;text-shadow:0 0 8px rgba(0,255,65,.4)">探索イベント</div>
+      <p class="man-body">探索するたびに、何らかの結果が必ず発生します。敵との遭遇・空振り・アイテム発見・カード入手・電脳闇市へのアクセスなど、複数の結果があります。</p>
+      <div class="man-hint"><div class="man-hint-label">// TIP</div>画面下部のストリートフィードに住人のつぶやきが流れます。ゲームの仕組みやヒントが混じっているので、たまに読んでみましょう。</div>
+    </section>
+    <section>
+      <div class="man-eyebrow" style="color:#00ffff">// 04 — REST</div>
+      <div class="man-sec-title" style="border-color:#00ffff;color:#00ffff;text-shadow:0 0 8px rgba(0,255,255,.3)">休憩について</div>
+      <div class="man-rest-list">
+        <div class="man-rest-item"><div class="man-rest-dot">&gt;&gt;</div><div>HPが少し回復します。</div></div>
+        <div class="man-rest-item"><div class="man-rest-dot">&gt;&gt;</div><div>探索と違い、環境によるダメージを受けません。<strong style="color:#ffec3d">悪い環境のときに休憩してやり過ごし、改善を待つのも有効な戦略です。</strong></div></div>
+        <div class="man-rest-item"><div class="man-rest-dot">&gt;&gt;</div><div>企業の監視レベルが下がります。</div></div>
+        <div class="man-rest-item"><div class="man-rest-dot">&gt;&gt;</div><div>休憩中のみ「シャッターを開ける」ことができます。そこから何かが見えるかもしれません。</div></div>
+      </div>
+    </section>
+    <section>
+      <div class="man-eyebrow" style="color:#cc88ff">// 05 — ENCOUNTER</div>
+      <div class="man-sec-title" style="border-color:#cc88ff;color:#cc88ff;text-shadow:0 0 8px rgba(200,136,255,.3)">遭遇イベント</div>
+      <p class="man-body">探索後、さらに別のイベントが発生することがあります。ショップ・コンテナ・サイバーウェア装着・緊急治療・自販機など複数の種類があり、それぞれボタンが表示されます。</p>
+      <div class="man-spoiler"><div class="man-spoiler-label">// ???</div>廃棄場の奥で、壊れたアンドロイド「EL」との出会いが始まることがあります。</div>
+    </section>
+    <section>
+      <div class="man-eyebrow" style="color:#ffaa00">// 06 — HAZARD</div>
+      <div class="man-sec-title" style="border-color:#ffaa00;color:#ffaa00;text-shadow:0 0 8px rgba(255,170,0,.3)">環境（HAZARD）について</div>
+      <p class="man-body">この衛星の環境は常に変動しており、探索のたびに環境に応じたダメージや効果を受けます。良い環境もあれば、HPやHGが激しく削られる危険な環境もあります。</p>
+      <p class="man-body">日数が増えるほど環境の変化が大きくなり、状況は全体的に悪化しやすくなっていきます。</p>
+    </section>
+    <section>
+      <div class="man-eyebrow" style="color:#ff0055">// 07 — SURVEILLANCE</div>
+      <div class="man-sec-title" style="border-color:#ff0055;color:#ff0055;text-shadow:0 0 8px rgba(255,0,85,.3)">監視システム</div>
+      <p class="man-body">この衛星では企業が常に市民を監視しています。探索や企業の目につくような行動をするたびに監視レベルが上がります。また所持金が多いほど監視レベルの上昇も大きくなります。</p>
+      <p class="man-body">休憩すると監視レベルが下がります。監視レベルが高いほど検問で資産を没収されやすくなり、監視レベルが低い状態では普段とは異なる状況が生まれることもあります。</p>
+      <div class="man-hint"><div class="man-hint-label">// TIP</div>闇市での売却レートは監視レベルによって変動します。レートが低いときは見逃すのも手段の一つです。</div>
+    </section>
+    <section>
+      <div class="man-eyebrow" style="color:#cc88ff">// 08 — CARD BATTLE</div>
+      <div class="man-sec-title" style="border-color:#cc88ff;color:#cc88ff;text-shadow:0 0 8px rgba(200,136,255,.3)">カードバトル</div>
+      <p class="man-body">悪化した環境の中で探索を行うと、賞金首との特殊なバトルが発生することがあります。通常の戦闘とは異なり、カードを使ったターン制バトルです。</p>
+      <p class="man-body">勝利すれば報酬が得られますが、敗北するとゲームオーバーです。カードは探索や遭遇イベントで増やせます。バトル開始時のHPは最大HPがそのまま初期値になります。</p>
+      <div class="man-hint"><div class="man-hint-label">// TIP</div>カードバトル時には所持カードの中からランダムで６枚選択されます。望みのカードが選択されるよう、不必要なカードは売却しましょう。</div>
+    </section>
+    <section>
+      <div class="man-eyebrow" style="color:#ffd1dc">// 09 — GOOD LUCK</div>
+      <div class="man-sec-title" style="border-color:#ffd1dc;color:#ffd1dc;text-shadow:0 0 8px rgba(255,209,220,.3)">最後に</div>
+      <div class="man-closing">
+        <div class="man-closing-label">// TRANSMISSION START</div>
+        <div class="man-closing-text">ここは忘れられた衛星。<br>企業は君の存在を数字として管理し、<br>過酷な環境は君を削り、他人は君を壊す。<br><br>それでもまだ拾えるものがある。<br>出会えるものがある。<br>見つけられるものがある。<br><br>この星から抜け出す方法を探せ。<br>再び夜空を眺めるために。</div>
+        <div class="man-closing-sig">— CITIZEN SCAVENGER // GOOD LUCK, SCAVENGER</div>
+      </div>
+    </section>
+  </div>
+  <footer class="man-footer">CITIZEN SCAVENGER — OPERATION MANUAL // OS v3.0</footer>
+  <button class="action-btn full-width" onclick="switchPage('page-inv')" style="margin:10px 0;">戻る [BACK]</button>
 </div>
 
 <div id="page-inv" class="page">
@@ -757,7 +889,8 @@ position: relative;
 </div>
 
 <script>
-    var hp = 100, hpMax = 100, hunger = 100, hgMax = 100, money = 50, isWaiting = false, inventory = [];
+    var hp = 100, hpMax = 100, hunger = 100, hgMax = 100, money = 0, isWaiting = false, 
+inventory = [{name: "【G】説明書", price: 50, type: "manual", noSell: false}];
 var days = 1;
 var cardBox = [];
     var isEncountering = false; 
@@ -912,7 +1045,8 @@ var hazardWeights = { 0:0, 1:100, 2:0, 3:0, 4:0, 5:0 }; // 各環境の抽選重
 {id: 5, name: "【G】電子賄賂", price: 125, type: "bribe", stock: 1, noSell: true},
 {id: 6, name: "【G】カードパック", price: 150, type: "card_pack", stock: 1, noSell: true},
 {id: 7, name: "【G】HP増強剤", price: 250, type: "maxhp_item", val: 50, stock: 1, noSell: true},
-        {id: 8, name: "【G】脱出用ICカード", price: 1000, type: "clear", stock: 1, noSell: true}
+        {id: 8, name: "【G】脱出用ICカード", price: 1000, type: "clear", stock: 1, noSell: true},
+        {id: 9, name: "【G】説明書", price: 50, type: "manual", stock: 1, noSell: false}
     ];
 
 // 全11種類のカードマスター
@@ -1011,7 +1145,7 @@ cardBox = [];
 }
 
     function switchPage(pageId) {
-        if (isEncountering && (pageId === 'page-inv' || pageId === 'page-card')) {
+        if (isEncountering && (pageId === 'page-inv' || pageId === 'page-card' || pageId === 'page-manual')) {
         log("警告：戦闘中はアクセス不能！", "#ff0055");
         return;
         }
@@ -1049,12 +1183,17 @@ var sotoImg = kansi <= -61 ? 'soto0.png' : kansi <= -30 ? 'soto1.png' : kansi <=
     document.getElementById('btn-inv').disabled = true;
     document.getElementById('btn-card').disabled = true;
 
-    var shutter = document.getElementById('shutter-overlay');
-    shutter.style.visibility = 'visible';
-shutter.style.opacity = '1';  // ← 追加
-    shutter.style.animation = 'shutter-open 0.4s ease-in forwards';
+ var shutter = document.getElementById('shutter-overlay');
+var preload = new Image();
+preload.onload = function() {
     setBgImage(sotoImg, true);
     document.querySelectorAll('#city-scroll img').forEach(img => img.style.opacity = '1.2');
+    shutter.style.opacity = '1';
+    shutter.style.animation = 'shutter-open 0.4s ease-in forwards';
+    shutter.style.visibility = 'visible';
+};
+preload.src = sotoImg;
+
    var sotoMsg = kansi <= -61 ? "観察：企業の監視はなく世紀末と化している…！！" : kansi <= -30 ? "観察：企業の監視が緩んできているのがわかる…！" : kansi <= 50 ? "観察：いつも通りの荒廃した街だ。" : kansi <= 100 ? "観察：企業の監視が強化されている！" : "観察：企業の監視が厳重になっている！！";
 log(sotoMsg, "#ffffff");
     setTimeout(() => {
@@ -1300,8 +1439,7 @@ hunger = Math.max(0, hunger - hLoss);
             feedEl.innerText = ">> " + randomMsg;
         }
 
-   
-var kansiRate = kansi <= -30 ? 0.005 : kansi <= 50 ? 0.01 : kansi <= 100 ? 0.03 : 0.05;
+var kansiRate = Math.min(0.03, Math.max(0.005, 0.01 + (kansi / 100) * 0.02)); 
 if (Math.random() < kansiRate) {
         var bribeIdx = inventory.findIndex(i => i.type === "bribe");
         if (bribeIdx > -1) {
@@ -1361,7 +1499,7 @@ document.getElementById('btn-rest').disabled = true;
     log("同期成功：電脳闇市にアクセス。アイテムの売却が可能になりました。", "var(--blue)");
 var k = Math.max(0, kansi);
 var minRate = Math.max(0.3, 0.8 - (k / 100) * 0.5);
-var maxRate = Math.max(1.0, 1.8 - (k / 100) * 0.8);
+var maxRate = Math.max(1.0, 1.5 - (k / 100) * 0.5);
 sellRate = Math.round((minRate + Math.random() * (maxRate - minRate)) * 100) / 100;
 log("本日の売却レート：×" + sellRate, "var(--gold)");
     document.getElementById('encounter-area').innerHTML = "";
@@ -1624,6 +1762,10 @@ cardBox.sort((a, b) => a.id - b.id);
         switchPage('page-main');
         return;
     }
+if (item.type === "manual") {
+    switchPage('page-manual');
+    return;
+}
 if (item.type === "bomb") {
         log("エラー：まだ使うタイミングではない。", "#ff0000");
         switchPage('page-main');
@@ -1963,7 +2105,7 @@ function showShopDetail(id) {
             desc = `？？？`;
             break;
         default:
-            desc = "詳細データ不明の未知のテクノロジー。";
+            desc = "この世界の生き延び方。再度購入用";
     }
 
     msgEl.innerText = item.name + ": " + desc;
