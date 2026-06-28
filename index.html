@@ -614,7 +614,7 @@ position: relative;
 </div>
 
 
-<div id="page-manual" class="page" style="overflow-y:auto; height:100vh; max-height:100vh; box-sizing:border-box; background:#050505; color:#00ff41; font-family:'Share Tech Mono','Courier New',monospace; font-size:14px; line-height:1.7;">
+<div id="page-manual" class="page" style="overflow-y:auto; height:90vh; box-sizing:border-box; background:#050505; color:#00ff41; font-family:'Share Tech Mono','Courier New',monospace; font-size:14px; line-height:1.7;">
   <style>
     .man-hero { position:relative; overflow:hidden; padding:40px 18px 32px; border-bottom:2px solid #00ff41; background:rgba(0,12,0,0.96); text-align:center; }
     .man-hero-grid { position:absolute; inset:0; background-image:linear-gradient(#003300 1px,transparent 1px),linear-gradient(90deg,#003300 1px,transparent 1px); background-size:40px 40px; opacity:.35; }
@@ -665,7 +665,7 @@ position: relative;
     <section>
       <div class="man-eyebrow" style="color:#00ff41">// 00 — OVERVIEW</div>
       <div class="man-sec-title" style="border-color:#00ff41;color:#00ff41;text-shadow:0 0 8px rgba(0,255,65,.4)">このゲームは何？</div>
-      <p class="man-body">企業に支配された廃棄衛星の上で、あなたは「スカベンジャー（廃品回収人）」として生き延びるサバイバルゲームです。</p>
+      <p class="man-body">企業に支配された廃棄衛星の上で、あなたは「スカベンジャー」として生き延びるサバイバルゲームです。</p>
       <p class="man-body">毎日街を探索してアイテムを集め、資金を稼ぎながら、この衛星からの脱出方法を探しましょう。操作はシンプルで、ボタンをタップするだけです。</p>
     </section>
     <section>
@@ -685,8 +685,8 @@ position: relative;
       <div class="man-btn-list">
         <div class="man-btn-row"><div class="man-tag" style="color:#00ff41">探索 [SCAVENGE]</div><div class="man-btn-desc">メインアクション。1日が進み、毎回何かしらの出来事が発生します。<strong style="color:#ffec3d">基本はこれを繰り返す。</strong></div></div>
         <div class="man-btn-row"><div class="man-tag" style="color:#00ffff">休憩</div><div class="man-btn-desc">その日は行動せず休む。詳細は「休憩について」を参照。</div></div>
-        <div class="man-btn-row"><div class="man-tag" style="color:#00ff41">所持品 [INV]</div><div class="man-btn-desc">拾ったアイテムの一覧。「使う」で効果を発動、「売る」で換金できます。売却は電脳闇市へのアクセス中のみ可能です。</div></div>
-        <div class="man-btn-row"><div class="man-tag" style="color:#cc88ff">カード [BOX]</div><div class="man-btn-desc">集めた戦闘カードの一覧。賞金首との特殊バトルで使います。最低6枚が必要です。</div></div>
+        <div class="man-btn-row"><div class="man-tag" style="color:#00ff41">所持品 [INV]</div><div class="man-btn-desc">取得アイテム一覧。「使う」で効果を発動、「売却」で換金できます。売却は闇市へのアクセス中のみ可能です。</div></div>
+        <div class="man-btn-row"><div class="man-tag" style="color:#cc88ff">カード [BOX]</div><div class="man-btn-desc">集めたカードの一覧。賞金首との特殊バトルで使います。</div></div>
       </div>
     </section>
     <section>
@@ -720,7 +720,7 @@ position: relative;
     <section>
       <div class="man-eyebrow" style="color:#ff0055">// 07 — SURVEILLANCE</div>
       <div class="man-sec-title" style="border-color:#ff0055;color:#ff0055;text-shadow:0 0 8px rgba(255,0,85,.3)">監視システム</div>
-      <p class="man-body">この衛星では企業が常に市民を監視しています。探索や企業の目につくような行動をするたびに監視レベルが上がります。また所持金が多いほど監視レベルの上昇も大きくなります。</p>
+      <p class="man-body">ここでは企業が常に市民を監視しています。探索や企業の目につくような行動をするたびに監視レベルが上がります。また所持金が多いほど監視レベルの上昇も大きくなります。</p>
       <p class="man-body">休憩すると監視レベルが下がります。監視レベルが高いほど検問で資産を没収されやすくなり、監視レベルが低い状態では普段とは異なる状況が生まれることもあります。</p>
       <div class="man-hint"><div class="man-hint-label">// TIP</div>闇市での売却レートは監視レベルによって変動します。レートが低いときは見逃すのも手段の一つです。</div>
     </section>
@@ -739,11 +739,10 @@ position: relative;
         <div class="man-closing-text">ここは忘れられた衛星。<br>企業は君の存在を数字として管理し、<br>過酷な環境は君を削り、他人は君を壊す。<br><br>それでもまだ拾えるものがある。<br>出会えるものがある。<br>見つけられるものがある。<br><br>この星から抜け出す方法を探せ。<br>再び夜空を眺めるために。</div>
         <div class="man-closing-sig">— CITIZEN SCAVENGER // GOOD LUCK, SCAVENGER</div>
       </div>
-    </section>
+    <button class="action-btn full-width" onclick="switchPage('page-inv')" style="margin:10px 0;">戻る [BACK]</button>
   </div>
   <footer class="man-footer">CITIZEN SCAVENGER — OPERATION MANUAL // OS v3.0</footer>
-  <button class="action-btn full-width" onclick="switchPage('page-inv')" style="margin:10px 0;">戻る [BACK]</button>
-</div>
+  </div>
 
 <div id="page-inv" class="page">
     <div id="os-interface">
