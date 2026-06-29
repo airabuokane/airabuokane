@@ -1087,7 +1087,7 @@ let canSellItems = false; // アイテムが売却可能かどうかのフラグ
 // --- 賞金首マスターデータ ---
 const bountyMaster = [
     { name: "CRAZY_JIMMY", atk: 30, hp: 100, slots: [9, 0, 0, 10, 10, 1], prize: 100 },
-    { name: "NEON_REAPER", atk: 30, hp: 125, slots: [9, 9, 4, 0, 7, 2], prize: 150 },
+    { name: "NEON_REAPER", atk: 30, hp: 125, slots: [9, 9, 4, 0, 7, 1], prize: 150 },
     { name: "SHADOW_GLITCH", atk: 30, hp: 175, slots: [9, 0, 4, 4, 0, 9], prize: 200 },
     { name: "CHROME_VIPER", atk: 30, hp: 200, slots: [0, 0, 1, 6, 6, 10], prize: 250 },
     { name: "GHOSTWIRE_JAX", atk: 45, hp: 300, slots: [5, 8, 5, 10, 5, 8], prize: 333 },
@@ -1497,7 +1497,7 @@ document.getElementById('btn-rest').disabled = true;
     canSellItems = true;
     log("同期成功：電脳闇市にアクセス。アイテムの売却が可能になりました。", "var(--blue)");
 var k = Math.max(0, kansi);
-var minRate = Math.max(0.3, 0.8 - (k / 100) * 0.5);
+var minRate = Math.max(0.5, 1.0 - (k / 100) * 0.5);
 var maxRate = Math.max(1.0, 1.5 - (k / 100) * 0.5);
 sellRate = Math.round((minRate + Math.random() * (maxRate - minRate)) * 100) / 100;
 log("本日の売却レート：×" + sellRate, "var(--gold)");
@@ -1776,10 +1776,7 @@ if (item.type === "bribe") {
 if (item.type === "unlock_sell") {
         canSellItems = true; // 売却可能状態にする
         log("同期成功：電脳闇市にアクセス。アイテムの売却が可能になりました。", "var(--blue)");
-var k = Math.max(0, kansi);
-var minRate = Math.max(0.3, 0.8 - (k / 100) * 0.5);
-var maxRate = Math.max(1.0, 1.8 - (k / 100) * 0.8);
-sellRate = Math.round((minRate + Math.random() * (maxRate - minRate)) * 100) / 100;
+sellRate = 1.0;
 log("本日の売却レート：×" + sellRate, "var(--gold)");
         inventory.splice(idx, 1); // アイテムを消費
         update();
